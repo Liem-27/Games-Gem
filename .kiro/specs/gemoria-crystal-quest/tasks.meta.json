@@ -50,6 +50,180 @@
         "chatSessionId": "sess_4e7a4003-a625-4ddc-b9c5-431371f720ad",
         "timestamp": 1789628919795
       }
+    ],
+    "4.1 Create `js/screens/placeholder.js`": [
+      {
+        "executionId": "4e7efb13-939d-436c-97ba-8162d8d66bf1",
+        "chatSessionId": "sess_aabb5518-c5a7-4c37-888d-fc2e816b75aa",
+        "timestamp": 1789628971028
+      },
+      {
+        "executionId": "4e7efb13-939d-436c-97ba-8162d8d66bf1",
+        "chatSessionId": "sess_aabb5518-c5a7-4c37-888d-fc2e816b75aa",
+        "timestamp": 1789629115955
+      }
+    ],
+    "4. Implement the placeholder screen factory": [
+      {
+        "executionId": "4e7efb13-939d-436c-97ba-8162d8d66bf1",
+        "chatSessionId": "sess_aabb5518-c5a7-4c37-888d-fc2e816b75aa",
+        "timestamp": 1789629116121
+      }
+    ],
+    "5.1 Create `js/screens/main-menu.js`": [
+      {
+        "executionId": "cd89b589-ef5a-48f4-8881-af3833dd3c20",
+        "chatSessionId": "sess_3c38ac0d-a79e-429d-ad6b-10ff77b288fa",
+        "timestamp": 1789629161347
+      },
+      {
+        "executionId": "cd89b589-ef5a-48f4-8881-af3833dd3c20",
+        "chatSessionId": "sess_3c38ac0d-a79e-429d-ad6b-10ff77b288fa",
+        "timestamp": 1789629308303
+      }
+    ],
+    "5. Implement the Main Menu UI module": [
+      {
+        "executionId": "cd89b589-ef5a-48f4-8881-af3833dd3c20",
+        "chatSessionId": "sess_3c38ac0d-a79e-429d-ad6b-10ff77b288fa",
+        "timestamp": 1789629308468
+      }
+    ],
+    "6. Checkpoint — Ensure all module tests pass": [
+      {
+        "executionId": "88e9072d-b03b-4113-bb24-91fa63d7196a",
+        "chatSessionId": "sess_60d2ad2b-b7da-4e45-ac77-94cb0b67baf5",
+        "timestamp": 1789629335340
+      },
+      {
+        "executionId": "88e9072d-b03b-4113-bb24-91fa63d7196a",
+        "chatSessionId": "sess_60d2ad2b-b7da-4e45-ac77-94cb0b67baf5",
+        "timestamp": 1789629426003
+      }
+    ],
+    "7.1 Create `js/config/screens.js`": [
+      {
+        "executionId": "6fc60cde-5c14-46c4-a7eb-61bd51325441",
+        "chatSessionId": "sess_d664dae4-4280-4f7c-b485-efadf7b6769f",
+        "timestamp": 1789629446059
+      },
+      {
+        "executionId": "6fc60cde-5c14-46c4-a7eb-61bd51325441",
+        "chatSessionId": "sess_d664dae4-4280-4f7c-b485-efadf7b6769f",
+        "timestamp": 1789629543394
+      }
+    ],
+    "7. Wire the screen registry": [
+      {
+        "executionId": "6fc60cde-5c14-46c4-a7eb-61bd51325441",
+        "chatSessionId": "sess_d664dae4-4280-4f7c-b485-efadf7b6769f",
+        "timestamp": 1789629543530
+      }
+    ],
+    "8.1 Create `js/main.js`": [
+      {
+        "executionId": "34b6b584-5630-4523-ba79-9e8caea538b6",
+        "chatSessionId": "sess_741a8a7b-3080-43d2-87fc-71121a0223a7",
+        "timestamp": 1789629566783
+      },
+      {
+        "executionId": "34b6b584-5630-4523-ba79-9e8caea538b6",
+        "chatSessionId": "sess_741a8a7b-3080-43d2-87fc-71121a0223a7",
+        "timestamp": 1789629786428
+      }
+    ],
+    "8. Implement the application bootstrap": [
+      {
+        "executionId": "34b6b584-5630-4523-ba79-9e8caea538b6",
+        "chatSessionId": "sess_741a8a7b-3080-43d2-87fc-71121a0223a7",
+        "timestamp": 1789629786535
+      }
+    ],
+    "9.1 Create `index.html` at the project root": [
+      {
+        "executionId": "d9047916-949a-468e-aa21-6134505f9df1",
+        "chatSessionId": "sess_f82de228-b8b2-4cee-bcbc-4b7328fe1b32",
+        "timestamp": 1789629807625
+      },
+      {
+        "executionId": "d9047916-949a-468e-aa21-6134505f9df1",
+        "chatSessionId": "sess_f82de228-b8b2-4cee-bcbc-4b7328fe1b32",
+        "timestamp": 1789629906553
+      }
+    ],
+    "9. Create the HTML entry point": [
+      {
+        "executionId": "d9047916-949a-468e-aa21-6134505f9df1",
+        "chatSessionId": "sess_f82de228-b8b2-4cee-bcbc-4b7328fe1b32",
+        "timestamp": 1789629906651
+      }
+    ],
+    "10.1 Create `css/reset.css` (base and reset styles)": [
+      {
+        "executionId": "337dcec3-15fe-4053-942d-3901eb4b50b8",
+        "chatSessionId": "sess_12dd34b5-86c9-4f28-bc70-36bd57012cf9",
+        "timestamp": 1789629929238
+      },
+      {
+        "executionId": "337dcec3-15fe-4053-942d-3901eb4b50b8",
+        "chatSessionId": "sess_12dd34b5-86c9-4f28-bc70-36bd57012cf9",
+        "timestamp": 1789630003803
+      }
+    ],
+    "10.2 Create `css/theme.css` (fantasy crystal theme)": [
+      {
+        "executionId": "1e7f4921-a4aa-45fb-b129-b8d0c0e4d4ad",
+        "chatSessionId": "sess_f316c70f-b43a-4415-84bd-1c8f8dceb3c0",
+        "timestamp": 1789630025962
+      },
+      {
+        "executionId": "1e7f4921-a4aa-45fb-b129-b8d0c0e4d4ad",
+        "chatSessionId": "sess_f316c70f-b43a-4415-84bd-1c8f8dceb3c0",
+        "timestamp": 1789630144138
+      }
+    ],
+    "10.3 Create `css/menu.css` (Main Menu layout and button styling)": [
+      {
+        "executionId": "4be3ec3c-e631-4ecc-b458-7b91231a6546",
+        "chatSessionId": "sess_634183f0-4b5e-425b-b95e-6dff57a8ddc8",
+        "timestamp": 1789630163197
+      },
+      {
+        "executionId": "4be3ec3c-e631-4ecc-b458-7b91231a6546",
+        "chatSessionId": "sess_634183f0-4b5e-425b-b95e-6dff57a8ddc8",
+        "timestamp": 1789630338784
+      }
+    ],
+    "10. Author modular CSS": [
+      {
+        "executionId": "4be3ec3c-e631-4ecc-b458-7b91231a6546",
+        "chatSessionId": "sess_634183f0-4b5e-425b-b95e-6dff57a8ddc8",
+        "timestamp": 1789630338969
+      }
+    ],
+    "11. Author the README with run instructions": [
+      {
+        "executionId": "b6eaf1f8-ca5d-4c6a-acde-53977c1a1156",
+        "chatSessionId": "sess_3ea7eb99-ebf0-45b5-9826-504a06166cee",
+        "timestamp": 1789630376361
+      },
+      {
+        "executionId": "b6eaf1f8-ca5d-4c6a-acde-53977c1a1156",
+        "chatSessionId": "sess_3ea7eb99-ebf0-45b5-9826-504a06166cee",
+        "timestamp": 1789630439259
+      }
+    ],
+    "12. Final checkpoint — Ensure all tests pass": [
+      {
+        "executionId": "73fa7389-7131-4c89-9fd7-8b5592926942",
+        "chatSessionId": "sess_08896cfb-a9ef-4281-bd17-6157ea6d38c0",
+        "timestamp": 1789630468262
+      },
+      {
+        "executionId": "73fa7389-7131-4c89-9fd7-8b5592926942",
+        "chatSessionId": "sess_08896cfb-a9ef-4281-bd17-6157ea6d38c0",
+        "timestamp": 1789630598301
+      }
     ]
   }
 }

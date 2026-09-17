@@ -35,15 +35,15 @@ Everything is deliberately additive: the Router is general, the registry is the 
     - `register` must let new screens be added without modifying Router internals.
     - _Requirements: 4.2, 4.3, 9.4_
 
-- [ ] 4. Implement the placeholder screen factory
-  - [ ] 4.1 Create `js/screens/placeholder.js`
+- [x] 4. Implement the placeholder screen factory
+  - [x] 4.1 Create `js/screens/placeholder.js`
     - Export `createPlaceholderScreen({ title, message })` returning a `Screen`.
     - `mount(container, ctx)` renders the feature title, the "not yet available" message, and a **Back** control whose activation calls `ctx.navigate('main-menu')`.
     - Style the container with a solid theme background so controls remain visible/interactive even if artwork fails.
     - _Requirements: 6.4, 6.5, 9.3, 9.5, 1.4_
 
-- [ ] 5. Implement the Main Menu UI module
-  - [ ] 5.1 Create `js/screens/main-menu.js`
+- [x] 5. Implement the Main Menu UI module
+  - [x] 5.1 Create `js/screens/main-menu.js`
     - Export `mainMenuScreen()` returning a `Screen`.
     - Render the title text exactly "Gemoria: Crystal Quest".
     - Render the five buttons from a data-driven `MenuItem` list (`{ label, screenId }`): Play→`play`, World Map→`world-map`, Boosters→`boosters`, Achievements→`achievements`, Settings→`settings`; one enabled, activatable button per item with a matching label.
@@ -51,55 +51,55 @@ Everything is deliberately additive: the Router is general, the registry is the 
     - On activation: toggle an active-state CSS class (visual change) then call `ctx.navigate(targetId)` for that item.
     - _Requirements: 4.4, 5.1, 5.3, 6.1, 6.2, 6.6, 7.1, 7.2, 7.3, 10.3, 10.4_
 
-- [ ] 6. Checkpoint — Ensure all module tests pass
+- [x] 6. Checkpoint — Ensure all module tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Wire the screen registry
-  - [ ] 7.1 Create `js/config/screens.js`
+- [x] 7. Wire the screen registry
+  - [x] 7.1 Create `js/config/screens.js`
     - Import `mainMenuScreen` and `createPlaceholderScreen`.
     - Export `screenRegistry` declaring `main-menu` plus the five placeholder screens (`play`, `world-map`, `boosters`, `achievements`, `settings`), each with an `id` and a `factory`, and per-feature `title`/`message` for placeholders.
     - This is the single place screens are declared; future screens are added here without editing menu/router/bootstrap.
     - _Requirements: 1.3, 1.4, 1.6, 6.1_
 
-- [ ] 8. Implement the application bootstrap
-  - [ ] 8.1 Create `js/main.js`
+- [x] 8. Implement the application bootstrap
+  - [x] 8.1 Create `js/main.js`
     - Import `createRouter`, `screenRegistry`, and `createStore`.
     - Export `boot(rootSelector = '#app')` that: resolves `#app` (reveal `#boot-error` if missing); creates the store scaffold; creates the Router over the container; registers each screen from the registry; navigates to the initial screen `'main-menu'`.
     - Wrap the wiring in `try/catch`; on failure reveal the on-screen `#boot-error` "failed to load" region so the viewport is never left blank.
     - Invoke `boot()` at module end so the game starts on load (keep it exported for testability).
     - _Requirements: 2.5, 4.1, 4.5, 5.1_
 
-- [ ] 9. Create the HTML entry point
-  - [ ] 9.1 Create `index.html` at the project root
+- [x] 9. Create the HTML entry point
+  - [x] 9.1 Create `index.html` at the project root
     - Declare `<meta name="viewport" content="width=device-width, initial-scale=1.0">`.
     - Link exactly three stylesheets in order: reset/base → theme → menu.
     - Include a single mount root `<div id="app"></div>` and a static, hidden `<div id="boot-error" hidden>…</div>` region with a "The game failed to load." message.
     - Reference the entry module with exactly one `<script type="module" src="js/main.js"></script>`; include a `<noscript>` message.
     - _Requirements: 1.2, 2.1, 2.2, 2.3, 8.4_
 
-- [ ] 10. Author modular CSS
-  - [ ] 10.1 Create `css/reset.css` (base and reset styles)
+- [x] 10. Author modular CSS
+  - [x] 10.1 Create `css/reset.css` (base and reset styles)
     - Reset/normalize defaults, box-sizing, base document rules; contain no theme-specific color or typography definitions.
     - _Requirements: 3.1_
 
-  - [ ] 10.2 Create `css/theme.css` (fantasy crystal theme)
+  - [x] 10.2 Create `css/theme.css` (fantasy crystal theme)
     - Define all fantasy crystal theme colors as reusable CSS custom properties (no literal color values elsewhere); include at least one color and at least one typography property (font family/size/weight).
     - Every `var()` usage includes a defined fallback (e.g., `var(--crystal-primary, #4b3f9e)`) so elements remain visible if a property is undefined.
     - _Requirements: 3.2, 3.4, 3.6_
 
-  - [ ] 10.3 Create `css/menu.css` (Main Menu layout and button styling)
+  - [x] 10.3 Create `css/menu.css` (Main Menu layout and button styling)
     - Contain no base, reset, or theme color literal definitions; reference theme custom properties (with fallbacks) for any theme colors applied.
     - Responsive at a 768px breakpoint: ≤768px a single vertical column with each button full width minus 16px side margins; >768px content horizontally centered with max content width 960px.
     - Touch targets minimum 44×44px with ≥8px spacing between adjacent targets; zero horizontal overflow across 320–2560px; enable vertical scroll if content is taller than the viewport while keeping horizontal overflow at zero.
     - _Requirements: 3.3, 3.5, 8.1, 8.2, 8.3, 8.5, 8.6_
 
 
-- [ ] 11. Author the README with run instructions
+- [x] 11. Author the README with run instructions
   - Create `README.md` with exact steps to serve over HTTP from the project root (e.g., `python -m http.server` or `npx serve`, then open `http://localhost:<port>/`).
   - State that ES modules require serving over HTTP and that opening `index.html` directly from `file://` is not supported.
   - _Requirements: 10.5, 10.6_
 
-- [ ] 12. Final checkpoint — Ensure all tests pass
+- [x] 12. Final checkpoint — Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

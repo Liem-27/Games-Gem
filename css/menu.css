@@ -1,0 +1,243 @@
+/*
+ * menu.css — Main Menu layout and Menu_Button styling for Gemoria: Crystal Quest.
+ *
+ * Responsibility (single concern): layout and control styling for the Main Menu
+ * (`.main-menu`) and the Placeholder screen (`.placeholder-screen`) — how those
+ * screens are arranged, sized, spaced, and made responsive/touch-friendly.
+ *
+ * This file MUST NOT contain:
+ *   - base/reset rules (those live in css/reset.css), or
+ *   - theme color DEFINITIONS (those live in css/theme.css as :root custom
+ *     properties).
+ *
+ * Color policy (Requirements 3.3, 3.5, 3.6): this file defines no theme colors.
+ * Where a color is applied it references a theme custom property AND carries a
+ * defined fallback via `var(--custom-property, #fallback)`, so the element stays
+ * visible even if the custom property is undefined at render time. Fallbacks
+ * mirror the literals defined once in css/theme.css.
+ *
+ * Responsive contract (Requirement 8):
+ *   - 8.1 (≤768px): buttons form a single vertical column, each full width minus
+ *         a 16px horizontal margin per side.
+ *   - 8.2 (>768px): content is horizontally centered with a 960px max width.
+ *   - 8.3: touch targets are ≥44×44px with ≥8px spacing between adjacent targets.
+ *   - 8.5: zero horizontal overflow across 320–2560px (no horizontal scrollbar).
+ *   - 8.6: vertical scrolling is enabled when content exceeds the viewport height
+ *         while horizontal overflow stays at zero.
+ */
+
+/* -------------------------------------------------------------------------- */
+/* Overflow contract (Requirements 8.5, 8.6)                                  */
+/* Allow vertical scroll when content is taller than the viewport; never allow */
+/* horizontal scroll. Applied at the document level so it holds for every       */
+/* screen mounted into #app.                                                    */
+/* -------------------------------------------------------------------------- */
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* The single mount root fills the viewport and never overflows sideways. */
+#app {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Main Menu layout                                                            */
+/* -------------------------------------------------------------------------- */
+
+/*
+ * Root menu container. A vertical flex column centers the title, artwork, and
+ * button group. `width: 100%` + `max-width` keeps content bounded on wide
+ * screens; `margin: 0 auto` centers it (Requirement 8.2). Padding gives the
+ * content breathing room without introducing horizontal overflow because the
+ * global box model (reset.css) is border-box.
+ */
+.main-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 960px;      /* >768px: max content width (Requirement 8.2) */
+  margin: 0 auto;        /* >768px: horizontally centered (Requirement 8.2) */
+  min-height: 100vh;
+  padding: 24px 16px;    /* keeps content 16px clear of the viewport edges */
+  overflow-x: hidden;    /* belt-and-braces: no horizontal overflow (8.5) */
+}
+
+/* Title layout only; color/typography theme lives in .crystal-title (theme.css). */
+.main-menu__title {
+  width: 100%;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/*
+ * Placeholder_Artwork sizing. `max-width: 100%` (with reset.css making SVG a
+ * block) guarantees the artwork can never force horizontal overflow (8.5).
+ */
+.main-menu__artwork {
+  width: 200px;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 32px;
+}
+
+/*
+ * Button group. A vertical flex column with an 8px gap satisfies the minimum
+ * spacing between adjacent touch targets (Requirement 8.3). `width: 100%`
+ * lets each button stretch to the available content width.
+ */
+.main-menu__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;             /* ≥8px spacing between adjacent touch targets (8.3) */
+  width: 100%;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Menu_Button styling                                                         */
+/* -------------------------------------------------------------------------- */
+
+/*
+ * Each Menu_Button is a touch target: minimum 44×44px (Requirement 8.3).
+ * Colors reference theme custom properties with defined fallbacks (3.3/3.5/3.6).
+ */
+.menu-button {
+  display: block;
+  width: 100%;
+  min-width: 44px;       /* touch target minimum width (8.3) */
+  min-height: 44px;      /* touch target minimum height (8.3) */
+  padding: 12px 20px;
+  border: 1px solid var(--crystal-border, #5741a8);
+  border-radius: 10px;
+  background-color: var(--crystal-surface, #2a1b5e);
+  color: var(--crystal-text, #f2ecff);
+  font-family: var(--crystal-font-display, "Trebuchet MS", sans-serif);
+  font-size: var(--crystal-font-size-base, 1rem);
+  font-weight: var(--crystal-font-weight-bold, 700);
+  text-align: center;
+  transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.menu-button:hover {
+  background-color: var(--crystal-surface-alt, #3a2780);
+}
+
+.menu-button:focus-visible {
+  outline: 2px solid var(--crystal-accent-cyan, #4fe3d0);
+  outline-offset: 2px;
+}
+
+/*
+ * Activation state toggled by main-menu.js (`menu-button--active`). Provides the
+ * immediate (<100ms) visual state change on activation (supports Requirement
+ * 6.6, applied here as layout/appearance feedback).
+ */
+.menu-button--active {
+  background-color: var(--crystal-primary-strong, #6b5bd6);
+  color: var(--crystal-text-on-accent, #10082a);
+  transform: scale(0.98);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Placeholder screen layout                                                   */
+/* -------------------------------------------------------------------------- */
+
+/*
+ * The placeholder screen mirrors the menu's centered, bounded layout so the
+ * responsive/overflow guarantees (8.2, 8.5, 8.6) hold there too.
+ */
+.placeholder-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 24px 16px;
+  overflow-x: hidden;
+  text-align: center;
+}
+
+.placeholder-screen__title {
+  margin-bottom: 16px;
+}
+
+.placeholder-screen__message {
+  margin-bottom: 24px;
+  color: var(--crystal-text-muted, #b3a7dd);
+}
+
+/* The Back control is a touch target: minimum 44×44px (Requirement 8.3). */
+.placeholder-screen__back {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 12px 24px;
+  border: 1px solid var(--crystal-border, #5741a8);
+  border-radius: 10px;
+  background-color: var(--crystal-surface, #2a1b5e);
+  color: var(--crystal-text, #f2ecff);
+  font-family: var(--crystal-font-display, "Trebuchet MS", sans-serif);
+  font-size: var(--crystal-font-size-base, 1rem);
+  font-weight: var(--crystal-font-weight-bold, 700);
+  transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.placeholder-screen__back:hover {
+  background-color: var(--crystal-surface-alt, #3a2780);
+}
+
+.placeholder-screen__back:focus-visible {
+  outline: 2px solid var(--crystal-accent-cyan, #4fe3d0);
+  outline-offset: 2px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Responsive breakpoint at 768px                                              */
+/* -------------------------------------------------------------------------- */
+
+/*
+ * ≤768px (Requirement 8.1): a single vertical column of buttons, each occupying
+ * the full available viewport width minus a 16px margin on each side.
+ *
+ * The button group already stacks vertically (flex-direction: column). Here we
+ * make the group span the viewport with an explicit 16px margin per side so
+ * each full-width button is inset exactly 16px from each edge. The container
+ * padding is removed at this width so the 16px margin is the sole horizontal
+ * inset and the buttons hit the intended full-width-minus-16px measurement.
+ */
+@media (max-width: 768px) {
+  .main-menu {
+    max-width: none;
+    padding: 24px 0;     /* horizontal inset now comes solely from the margins below */
+  }
+
+  .main-menu__title,
+  .main-menu__artwork {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+
+  .main-menu__buttons {
+    width: auto;         /* let left/right margins define the width */
+    margin-left: 16px;   /* 16px inset from the left edge (8.1) */
+    margin-right: 16px;  /* 16px inset from the right edge (8.1) */
+  }
+
+  /* Each button fills the group, i.e. full viewport width minus 16px per side. */
+  .menu-button {
+    width: 100%;
+  }
+
+  .placeholder-screen {
+    max-width: none;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

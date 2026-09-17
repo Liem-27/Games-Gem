@@ -1,0 +1,84 @@
+/*
+ * theme.css — Fantasy crystal visual theme for Gemoria: Crystal Quest.
+ *
+ * Responsibility (single concern): the fantasy crystal visual identity ONLY —
+ * an original palette of deep purples/blues with luminous crystal accents,
+ * plus the thematic typography. This file MUST NOT contain base/reset styles
+ * (those live in css/reset.css) or Main Menu layout / Menu_Button styling
+ * (those live in css/menu.css).
+ *
+ * Color policy (Requirement 3.4): every theme color is defined exactly once as
+ * a reusable CSS custom property under :root. Literal color values appear ONLY
+ * inside these custom-property definitions and inside var() fallbacks. No other
+ * rule in this file (or in theme/menu/base CSS) hardcodes a literal color.
+ *
+ * Fallback policy (Requirement 3.6): every var() usage in this file includes a
+ * defined fallback (e.g., var(--crystal-primary, #4b3f9e)) so that if a custom
+ * property is undefined at render time, the element stays visible against its
+ * background.
+ */
+
+:root {
+  /* --- Core surfaces: the deep, dark crystal-cavern backdrop. --- */
+  --crystal-bg-deep: #120a2a;      /* deepest background (near-black violet) */
+  --crystal-bg: #1c123f;           /* primary app background */
+  --crystal-surface: #2a1b5e;      /* raised panel / card surface */
+  --crystal-surface-alt: #3a2780;  /* alternate / hovered surface */
+
+  /* --- Brand purples/blues: the identity hues. --- */
+  --crystal-primary: #4b3f9e;      /* primary brand purple */
+  --crystal-primary-strong: #6b5bd6; /* brighter primary for emphasis */
+  --crystal-secondary: #2f5fb0;    /* supporting deep blue */
+
+  /* --- Crystal accents: the luminous gem highlights. --- */
+  --crystal-accent-cyan: #4fe3d0;   /* cyan crystal glow */
+  --crystal-accent-magenta: #e15fd0; /* magenta crystal glow */
+  --crystal-accent-gold: #f5c451;    /* golden facet highlight */
+  --crystal-shine: #eaf4ff;          /* specular shine / facet edge */
+
+  /* --- Text colors. --- */
+  --crystal-text: #f2ecff;         /* primary text on dark surfaces */
+  --crystal-text-muted: #b3a7dd;   /* muted / secondary text */
+  --crystal-text-on-accent: #10082a; /* dark text sitting on bright accents */
+
+  /* --- Feedback / borders. --- */
+  --crystal-border: #5741a8;       /* subtle facet border */
+  --crystal-danger: #ff6b8b;       /* error / warning glow */
+
+  /* --- Thematic typography (Requirement 3.2). --- */
+  --crystal-font-display: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+  --crystal-font-body: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --crystal-font-size-base: 1rem;
+  --crystal-font-size-title: clamp(2rem, 6vw, 3.5rem);
+  --crystal-font-weight-bold: 700;
+  --crystal-letter-spacing-title: 0.04em;
+}
+
+/*
+ * Apply the theme to the document. Every var() below carries a fallback so the
+ * element remains visible even if a custom property is undefined at render time.
+ */
+body {
+  background-color: var(--crystal-bg, #1c123f);
+  color: var(--crystal-text, #f2ecff);
+  font-family: var(--crystal-font-body, system-ui, sans-serif);
+  font-size: var(--crystal-font-size-base, 1rem);
+}
+
+/*
+ * Thematic title treatment: display font, bold weight, crystal shine color.
+ * (Layout/positioning of the title belongs to css/menu.css; this rule only
+ * carries the visual theme — color and typography.)
+ */
+.crystal-title {
+  font-family: var(--crystal-font-display, "Trebuchet MS", sans-serif);
+  font-size: var(--crystal-font-size-title, 3rem);
+  font-weight: var(--crystal-font-weight-bold, 700);
+  letter-spacing: var(--crystal-letter-spacing-title, 0.04em);
+  color: var(--crystal-shine, #eaf4ff);
+}
+
+/* Muted secondary text (e.g., "coming soon" messages). */
+.crystal-text-muted {
+  color: var(--crystal-text-muted, #b3a7dd);
+}

@@ -1,0 +1,99 @@
+/*
+ * reset.css — Base and reset styles for Gemoria: Crystal Quest.
+ *
+ * Responsibility (single concern): normalize cross-browser defaults and define
+ * base, structural document rules only.
+ *
+ * This file MUST NOT contain any fantasy-crystal theme definitions:
+ *   - no color values (no color / background-color literals or custom props)
+ *   - no theme typography (no font-family, and no theme font sizes/weights)
+ * Theme colors and typography live in css/theme.css; menu layout lives in
+ * css/menu.css. Keep this file strictly base/reset/structural.
+ */
+
+/* Global box model: include padding and border in element size. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove default margins from all elements. */
+* {
+  margin: 0;
+}
+
+/* Root document sizing and font-size baseline (structural, not thematic). */
+html {
+  /* 100% keeps the user's browser font-size preference as the rem baseline. */
+  font-size: 100%;
+  /* Prevent mobile browsers from auto-inflating text on orientation change. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Base document rules: full-height, sensible line-height, smoothed rendering. */
+body {
+  min-height: 100vh;
+  padding: 0;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Media element defaults: block-level, never overflow their container. */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Form elements inherit typography from their context rather than UA defaults. */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Interactive controls signal interactivity. */
+button {
+  cursor: pointer;
+}
+
+/* Long words break to avoid overflow rather than forcing horizontal scroll. */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+/* Lists used for navigation shed their default list styling. */
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+/* Remove default underline from anchors; color/decoration is theme concern. */
+a {
+  text-decoration: none;
+}
+
+/* Respect users who prefer reduced motion by minimizing animation. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

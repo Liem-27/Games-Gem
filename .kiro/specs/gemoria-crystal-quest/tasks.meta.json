@@ -348,6 +348,192 @@
         "chatSessionId": "sess_3f691ebf-339f-402a-8040-0d3ab9bd305a",
         "timestamp": 1789635785301
       }
+    ],
+    "17.2 Write unit tests for initial board generation": [
+      {
+        "executionId": "2b5d2c58-b68c-4f05-a590-2c505e64d704",
+        "chatSessionId": "sess_c3d753e4-e117-4510-824f-547e9ea4b515",
+        "timestamp": 1789635927441
+      },
+      {
+        "executionId": "2b5d2c58-b68c-4f05-a590-2c505e64d704",
+        "chatSessionId": "sess_c3d753e4-e117-4510-824f-547e9ea4b515",
+        "timestamp": 1789636174111
+      }
+    ],
+    "17. Implement initial no-match board generation (PURE)": [
+      {
+        "executionId": "2b5d2c58-b68c-4f05-a590-2c505e64d704",
+        "chatSessionId": "sess_c3d753e4-e117-4510-824f-547e9ea4b515",
+        "timestamp": 1789636174330
+      }
+    ],
+    "18.1 Add `isAdjacent` and `swapCells` to `js/board.js`": [
+      {
+        "executionId": "19c869f0-fba6-4dbf-a936-70741914ac2e",
+        "chatSessionId": "sess_9f306a54-8e15-4f94-b9cd-7d7f2567027d",
+        "timestamp": 1789636297953
+      },
+      {
+        "executionId": "19c869f0-fba6-4dbf-a936-70741914ac2e",
+        "chatSessionId": "sess_9f306a54-8e15-4f94-b9cd-7d7f2567027d",
+        "timestamp": 1789636423987
+      }
+    ],
+    "18.2 Write unit tests for swap and adjacency": [
+      {
+        "executionId": "103789f6-ebd7-400e-ada7-b672e381dfcc",
+        "chatSessionId": "sess_f79fc122-cd65-40eb-b2a3-ffa19cb63a63",
+        "timestamp": 1789636772408
+      },
+      {
+        "executionId": "103789f6-ebd7-400e-ada7-b672e381dfcc",
+        "chatSessionId": "sess_f79fc122-cd65-40eb-b2a3-ffa19cb63a63",
+        "timestamp": 1789636958629
+      }
+    ],
+    "18. Implement swap and adjacency validation (PURE)": [
+      {
+        "executionId": "103789f6-ebd7-400e-ada7-b672e381dfcc",
+        "chatSessionId": "sess_f79fc122-cd65-40eb-b2a3-ffa19cb63a63",
+        "timestamp": 1789636958838
+      }
+    ],
+    "19.1 Add `removeCells` to `js/board.js`": [
+      {
+        "executionId": "2b5727d7-5c69-4ee9-96c1-44f22f803a44",
+        "chatSessionId": "sess_ca311b7a-44c6-4e14-8dfa-0f2fb6ac5d1f",
+        "timestamp": 1789636984445
+      },
+      {
+        "executionId": "2b5727d7-5c69-4ee9-96c1-44f22f803a44",
+        "chatSessionId": "sess_ca311b7a-44c6-4e14-8dfa-0f2fb6ac5d1f",
+        "timestamp": 1789637146485
+      }
+    ],
+    "19.2 Write unit tests for gem removal": [
+      {
+        "executionId": "848b9d33-d139-4764-a03e-6355950f91c0",
+        "chatSessionId": "sess_1bf4b12d-a311-4632-93eb-ba4f57f52766",
+        "timestamp": 1789637240279
+      },
+      {
+        "executionId": "848b9d33-d139-4764-a03e-6355950f91c0",
+        "chatSessionId": "sess_1bf4b12d-a311-4632-93eb-ba4f57f52766",
+        "timestamp": 1789637416059
+      }
+    ],
+    "19. Implement gem removal (PURE)": [
+      {
+        "executionId": "848b9d33-d139-4764-a03e-6355950f91c0",
+        "chatSessionId": "sess_1bf4b12d-a311-4632-93eb-ba4f57f52766",
+        "timestamp": 1789637416211
+      }
+    ],
+    "20.1 Add `applyGravity` to `js/board.js`": [
+      {
+        "executionId": "52573d91-23be-4c6f-bbd2-ac35483280fa",
+        "chatSessionId": "sess_742d2fe0-e60a-4423-90f1-edd7bfb9fe89",
+        "timestamp": 1789637504718
+      },
+      {
+        "executionId": "3dd26f4e-9628-4d66-89fd-b8fba1c9c190",
+        "chatSessionId": "sess_742d2fe0-e60a-4423-90f1-edd7bfb9fe89",
+        "timestamp": 1789637965960
+      }
+    ],
+    "20.2 Write unit tests for gravity": [
+      {
+        "executionId": "c72cf80e-a100-4808-bb0e-3daffb3c0edf",
+        "chatSessionId": "sess_88ca4cb4-ffcd-4763-98c4-13f21d80acc3",
+        "timestamp": 1789638008089
+      },
+      {
+        "executionId": "c72cf80e-a100-4808-bb0e-3daffb3c0edf",
+        "chatSessionId": "sess_88ca4cb4-ffcd-4763-98c4-13f21d80acc3",
+        "timestamp": 1789638129986
+      }
+    ],
+    "20. Implement gravity (PURE)": [
+      {
+        "executionId": "c72cf80e-a100-4808-bb0e-3daffb3c0edf",
+        "chatSessionId": "sess_88ca4cb4-ffcd-4763-98c4-13f21d80acc3",
+        "timestamp": 1789638130167
+      }
+    ],
+    "21.1 Add `refill` to `js/board.js`": [
+      {
+        "executionId": "824fceb4-4089-4a76-8756-6e4f0f1f9cf8",
+        "chatSessionId": "sess_cc4dc682-8ba3-4320-a3c4-a7050167d866",
+        "timestamp": 1789638156306
+      },
+      {
+        "executionId": "b2cf199a-6e7b-438d-8f3d-562028a6e671",
+        "chatSessionId": "sess_cc4dc682-8ba3-4320-a3c4-a7050167d866",
+        "timestamp": 1789638569707
+      }
+    ],
+    "21.2 Write unit tests for refill": [
+      {
+        "executionId": "980b1007-a6bf-4780-8d1d-1c6995780d91",
+        "chatSessionId": "sess_03e0aa6a-85bc-4fc1-9835-2ca505ee902e",
+        "timestamp": 1789638597000
+      },
+      {
+        "executionId": "980b1007-a6bf-4780-8d1d-1c6995780d91",
+        "chatSessionId": "sess_03e0aa6a-85bc-4fc1-9835-2ca505ee902e",
+        "timestamp": 1789638732012
+      }
+    ],
+    "21. Implement refill (PURE)": [
+      {
+        "executionId": "980b1007-a6bf-4780-8d1d-1c6995780d91",
+        "chatSessionId": "sess_03e0aa6a-85bc-4fc1-9835-2ca505ee902e",
+        "timestamp": 1789638732122
+      }
+    ],
+    "22.1 Add `isStableBoard` and `isDimensionAndTypeValid` to `js/board.js`": [
+      {
+        "executionId": "7920baa0-082d-49d6-8fe2-f214e7a5f6ec",
+        "chatSessionId": "sess_4f3b47af-0259-41b3-868a-791fe2da35ad",
+        "timestamp": 1789638819711
+      },
+      {
+        "executionId": "7920baa0-082d-49d6-8fe2-f214e7a5f6ec",
+        "chatSessionId": "sess_4f3b47af-0259-41b3-868a-791fe2da35ad",
+        "timestamp": 1789638989611
+      }
+    ],
+    "22.2 Write unit tests for stable-board validation": [
+      {
+        "executionId": "f89b97ba-8396-4f21-81a3-70b7efc207be",
+        "chatSessionId": "sess_b1c7b362-aadc-4f03-9142-986ba0aaf9c4",
+        "timestamp": 1789639033859
+      },
+      {
+        "executionId": "f89b97ba-8396-4f21-81a3-70b7efc207be",
+        "chatSessionId": "sess_b1c7b362-aadc-4f03-9142-986ba0aaf9c4",
+        "timestamp": 1789639220183
+      }
+    ],
+    "22. Implement stable-board and consistency validation (PURE)": [
+      {
+        "executionId": "f89b97ba-8396-4f21-81a3-70b7efc207be",
+        "chatSessionId": "sess_b1c7b362-aadc-4f03-9142-986ba0aaf9c4",
+        "timestamp": 1789639220369
+      }
+    ],
+    "23. Checkpoint — Ensure all pure-engine tests pass": [
+      {
+        "executionId": "f344a1dc-4d6f-4352-aaae-4b1afe03831c",
+        "chatSessionId": "sess_3a84dd9e-39db-4f57-97e7-4d9207d7ebdb",
+        "timestamp": 1789639256662
+      },
+      {
+        "executionId": "bee92225-47ca-4528-bd0b-6b279bf6d5fc",
+        "chatSessionId": "sess_3a84dd9e-39db-4f57-97e7-4d9207d7ebdb",
+        "timestamp": 1789639488311
+      }
     ]
   }
 }

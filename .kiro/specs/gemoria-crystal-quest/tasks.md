@@ -205,7 +205,7 @@ Implementation language: **Vanilla JavaScript (ES modules)**, as in Phase 1. Fra
     - **Tests required:** horizontal match, vertical match, overlapping matches, empty-case, determinism.
     - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5_
 
-- [ ] 17. Implement initial no-match board generation (PURE)
+- [x] 17. Implement initial no-match board generation (PURE)
   - [x] 17.1 Add `generateStableBoard` to `js/board.js`
     - **Objective:** Produce a full board with zero matches using bounded, safe generation.
     - **Files/modules affected:** `js/board.js`; uses `gem.js` and `match.js`.
@@ -214,7 +214,7 @@ Implementation language: **Vanilla JavaScript (ES modules)**, as in Phase 1. Fra
     - **Tests required:** covered in 17.2.
     - _Requirements: 13.1, 13.2, 13.3, 13.4_
 
-  - [ ] 17.2 Write unit tests for initial board generation
+  - [x] 17.2 Write unit tests for initial board generation
     - **Objective:** Verify a generated initial board is valid and match-free.
     - **Files/modules affected:** `tests/board.test.js`.
     - **Dependencies:** 17.1, 16.1.
@@ -222,8 +222,8 @@ Implementation language: **Vanilla JavaScript (ES modules)**, as in Phase 1. Fra
     - **Tests required:** 8×8 dimensions (Req 25.1), six valid types (Req 25.2), zero initial matches (Req 25.3).
     - _Requirements: 13.1, 13.2, 13.3, 13.4, 25.1, 25.2, 25.3_
 
-- [ ] 18. Implement swap and adjacency validation (PURE)
-  - [ ] 18.1 Add `isAdjacent` and `swapCells` to `js/board.js`
+- [x] 18. Implement swap and adjacency validation (PURE)
+  - [x] 18.1 Add `isAdjacent` and `swapCells` to `js/board.js`
     - **Objective:** Provide adjacency predicate and a pure swap producing a new board.
     - **Files/modules affected:** `js/board.js`.
     - **Dependencies:** 15.1.
@@ -231,7 +231,7 @@ Implementation language: **Vanilla JavaScript (ES modules)**, as in Phase 1. Fra
     - **Tests required:** covered in 18.2.
     - _Requirements: 15.1, 15.2_
 
-  - [ ] 18.2 Write unit tests for swap and adjacency
+  - [x] 18.2 Write unit tests for swap and adjacency
     - **Objective:** Verify adjacent swaps are accepted and non-adjacent are rejected.
     - **Files/modules affected:** `tests/board.test.js`.
     - **Dependencies:** 18.1, 16.1.
@@ -239,8 +239,8 @@ Implementation language: **Vanilla JavaScript (ES modules)**, as in Phase 1. Fra
     - **Tests required:** adjacent swap accepted, non-adjacent swap rejected.
     - _Requirements: 15.1, 15.2, 25.4, 25.5_
 
-- [ ] 19. Implement gem removal (PURE)
-  - [ ] 19.1 Add `removeCells` to `js/board.js`
+- [x] 19. Implement gem removal (PURE)
+  - [x] 19.1 Add `removeCells` to `js/board.js`
     - **Objective:** Clear matched cells to `null`, leaving non-matched cells untouched.
     - **Files/modules affected:** `js/board.js`.
     - **Dependencies:** 15.1.
@@ -248,7 +248,7 @@ Implementation language: **Vanilla JavaScript (ES modules)**, as in Phase 1. Fra
     - **Tests required:** covered in 19.2.
     - _Requirements: 17.1, 17.2_
 
-  - [ ] 19.2 Write unit tests for gem removal
+  - [x] 19.2 Write unit tests for gem removal
     - **Objective:** Verify matched gems are removed and non-matched retained.
     - **Files/modules affected:** `tests/board.test.js`.
     - **Dependencies:** 19.1.
@@ -256,8 +256,8 @@ Implementation language: **Vanilla JavaScript (ES modules)**, as in Phase 1. Fra
     - **Tests required:** match removal with retention of non-matched gems (Req 25.8).
     - _Requirements: 17.1, 17.2, 25.8_
 
-- [ ] 20. Implement gravity (PURE)
-  - [ ] 20.1 Add `applyGravity` to `js/board.js`
+- [x] 20. Implement gravity (PURE)
+  - [x] 20.1 Add `applyGravity` to `js/board.js`
     - **Objective:** Compact each column so gems fall to the lowest cells, empties rise to the top.
     - **Files/modules affected:** `js/board.js`.
     - **Dependencies:** 15.1.
@@ -265,7 +265,7 @@ Implementation language: **Vanilla JavaScript (ES modules)**, as in Phase 1. Fra
     - **Tests required:** covered in 20.2.
     - _Requirements: 18.1, 18.2, 18.3_
 
-  - [ ] 20.2 Write unit tests for gravity
+  - [x] 20.2 Write unit tests for gravity
     - **Objective:** Verify gravity ordering and non-destructiveness.
     - **Files/modules affected:** `tests/board.test.js`.
     - **Dependencies:** 20.1.
@@ -273,8 +273,8 @@ Implementation language: **Vanilla JavaScript (ES modules)**, as in Phase 1. Fra
     - **Tests required:** gravity places gems lowest preserving order (Req 25.9).
     - _Requirements: 18.1, 18.2, 18.3, 25.9_
 
-- [ ] 21. Implement refill (PURE)
-  - [ ] 21.1 Add `refill` to `js/board.js`
+- [x] 21. Implement refill (PURE)
+  - [x] 21.1 Add `refill` to `js/board.js`
     - **Objective:** Fill every empty cell with a fresh valid gem so the board is full.
     - **Files/modules affected:** `js/board.js`; uses `gem.js`.
     - **Dependencies:** 14.1, 15.1, 20.1.
@@ -282,7 +282,7 @@ Implementation language: **Vanilla JavaScript (ES modules)**, as in Phase 1. Fra
     - **Tests required:** covered in 21.2.
     - _Requirements: 19.1, 19.2_
 
-  - [ ] 21.2 Write unit tests for refill
+  - [x] 21.2 Write unit tests for refill
     - **Objective:** Verify the board is fully occupied with valid gems after refill.
     - **Files/modules affected:** `tests/board.test.js`.
     - **Dependencies:** 21.1.
@@ -290,8 +290,8 @@ Implementation language: **Vanilla JavaScript (ES modules)**, as in Phase 1. Fra
     - **Tests required:** refill fills every cell with a valid gem (Req 25.10).
     - _Requirements: 19.1, 19.2, 25.10_
 
-- [ ] 22. Implement stable-board and consistency validation (PURE)
-  - [ ] 22.1 Add `isStableBoard` and `isDimensionAndTypeValid` to `js/board.js`
+- [x] 22. Implement stable-board and consistency validation (PURE)
+  - [x] 22.1 Add `isStableBoard` and `isDimensionAndTypeValid` to `js/board.js`
     - **Objective:** Provide the ready-to-play and intermediate-state validity checks.
     - **Files/modules affected:** `js/board.js`; uses `match.js`.
     - **Dependencies:** 15.1, 16.1.
@@ -299,7 +299,7 @@ Implementation language: **Vanilla JavaScript (ES modules)**, as in Phase 1. Fra
     - **Tests required:** covered in 22.2.
     - _Requirements: 21.1, 21.2, 21.3, 21.5, 21.6_
 
-  - [ ] 22.2 Write unit tests for stable-board validation
+  - [x] 22.2 Write unit tests for stable-board validation
     - **Objective:** Verify stable vs non-stable detection and dimension/type invariants.
     - **Files/modules affected:** `tests/board.test.js`.
     - **Dependencies:** 22.1.
@@ -307,7 +307,7 @@ Implementation language: **Vanilla JavaScript (ES modules)**, as in Phase 1. Fra
     - **Tests required:** stable-board invariant checks (Req 21.1, 21.6).
     - _Requirements: 21.1, 21.2, 21.3, 21.5, 21.6_
 
-- [ ] 23. Checkpoint — Ensure all pure-engine tests pass
+- [x] 23. Checkpoint — Ensure all pure-engine tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 24. Implement the Game Board screen (ONLY DOM module)

@@ -19,7 +19,7 @@
  */
 
 import { ROWS, COLS, MIN_MATCH, GEM_TYPES } from './config/board-config.js';
-import { isValidGemType, createGem } from './gem.js';
+import { isValidGemType, createGem, randomGem } from './gem.js';
 import { findMatches } from './match.js';
 
 /**
@@ -128,6 +128,102 @@ export function setCell(board, row, col, gem) {
   const nextRow = board[row].slice();
   nextRow[col] = gem;
   nextBoard[row] = nextRow;
+  return nextBoard;
+}
+
+/**
+ * Report whether two cells share an edge (are orthogonally adjacent).
+ *
+ * Two cells are adjacent iff they lie in the same row with columns differing by
+ * exactly 1, or in the same column with rows differing by exactly 1 (Req 15.2).
+ * Diagonal pairs and non-adjacent pairs — including two identical cells — are
+ * not adjacent and return `false`.
+ *
+ * This is a pure predicate on cell addresses; it does not read the board.
+ *
+ * @param {Cell} a  One cell address `{ row, col }`.
+ * @param {Cell} b  The other cell address `{ row, col }`.
+ * @returns {boolean} true iff `a` and `b` share an edge.
+ */
+export function isAdjacent(a, b) {
+  const sameRowAdjacentCol = a.row === b.row && Math.abs(a.col - b.col) === 1;
+  const sameColAdjacentRow = a.col === b.col && Math.abs(a.row - b.row) === 1;
+  return sameRowAdjacentCol || sameColAdjacentRow;
+}
+
+/**
+ * Return a NEW board with the gems at cells `a` and `b` exchanged, without
+ * mutating the input board.
+ *
+ * The caller guarantees the two cells are adjacent (validated by the screen via
+ * {@link isAdjacent}); this function does not re-validate adjacency and does not
+ * consult match logic — the keep-vs-revert decision is made by the Game Board
+ * screen from `hasMatches` on the swapped board, not here (Req 15.1). Following
+ * the module's non-mutating convention (see {@link setCell}), a shallow copy of
+ * the board is returned with only the affected rows replaced, so the original
+ * board and its untouched rows are shared and left intact.
+ *
+ * @param {Board} board  The board to derive the new board from.
+ * @param {Cell} a  One cell address `{ row, col }`.
+ * @param {Cell} b  The other cell address `{ row, col }`.
+ * @returns {Board} A new board with the gems at `a` and `b` swapped.
+ */
+export function swapCells(board, a, b) {
+  const gemA = board[a.row][a.col];
+  const gemB = board[b.row][b.col];
+  const nextBoard = board.slice();
+  if (a.row === b.row) {
+    // Both cells live in the same row: copy that row once and set both cells.
+    const nextRow = board[a.row].slice();
+    nextRow[a.col] = gemB;
+    nextRow[b.col] = gemA;
+    nextBoard[a.row] = nextRow;
+  } else {
+    // Different rows: copy each affected row independently.
+    const nextRowA = board[a.row].slice();
+    nextRowA[a.col] = gemB;
+    nextBoard[a.row] = nextRowA;
+    const nextRowB = board[b.row].slice();
+    nextRowB[b.col] = gemA;
+    nextBoard[b.row] = nextRowB;
+  }
+  return nextBoard;
+}
+
+/**
+ * Return a NEW board with every cell in `matchedCells` cleared to `null`,
+ * without mutating the input board.
+ *
+ * Each `{ row, col }` in `matchedCells` names a gem belonging to a detected
+ * Match; those cells are emptied (Req 17.1) while every other cell keeps its
+ * current contents unchanged (Req 17.2). Following the module's non-mutating
+ * convention (see {@link setCell}), only the rows that contain a cleared cell
+ * are copied; the original board and its untouched rows are shared and left
+ * intact. An empty `matchedCells` list clears nothing and yields an unchanged
+ * copy of the board.
+ *
+ * The caller supplies coordinates that came from match detection, so they are
+ * expected to be in bounds; out-of-bounds entries are ignored rather than
+ * throwing, consistent with the module's null-signal / reject convention.
+ *
+ * @param {Board} board  The board to derive the new board from.
+ * @param {ReadonlyArray<Cell>} matchedCells  Cell addresses to clear to `null`.
+ * @returns {Board} A new board with the matched cells emptied and all other
+ *   cells unchanged.
+ */
+export function removeCells(board, matchedCells) {
+  const nextBoard = board.slice();
+  for (const { row, col } of matchedCells) {
+    if (!isValidCell(row, col)) {
+      continue;
+    }
+    // Copy the row lazily so a row is cloned at most once even when several of
+    // its cells are matched, and untouched rows stay shared with the input.
+    if (nextBoard[row] === board[row]) {
+      nextBoard[row] = board[row].slice();
+    }
+    nextBoard[row][col] = null;
+  }
   return nextBoard;
 }
 
@@ -267,4 +363,193 @@ export function generateStableBoard(rng = Math.random) {
   throw new Error(
     'generateStableBoard: failed to produce a Stable_Board within the attempt bound',
   );
+}
+
+/**
+ * Return a NEW board with gravity applied to every column, without mutating the
+ * input board.
+ *
+ * Because the board is row-major with the origin `(0,0)` at the top-left and
+ * `row` increasing downward, the "lowest available Cells" are the HIGHER row
+ * indices at the bottom of the board. For each column independently, the
+ * non-null gems fall so they occupy those lowest cells while every remaining
+ * empty cell rises to the top of the column (Req 18.1). The relative vertical
+ * order of the surviving gems is preserved (Req 18.2), and a column that
+ * contains no empty cell is left in its existing positions (Req 18.3). Within a
+ * column this neither creates nor destroys gems, so the per-column multiset of
+ * gems is preserved.
+ *
+ * Following the module's non-mutating convention (see {@link setCell}), only the
+ * rows whose contents actually change are copied; the original board and its
+ * untouched rows are shared and left intact. A board with no empty cell anywhere
+ * is returned as an unchanged copy that shares all of its rows.
+ *
+ * @param {Board} board  The board to derive the new board from.
+ * @returns {Board} A new board with each column compacted downward.
+ */
+export function applyGravity(board) {
+  const nextBoard = board.slice();
+  for (let col = 0; col < COLS; col += 1) {
+    // Collect the surviving gems from bottom to top so their relative vertical
+    // order is preserved when they are written back to the lowest cells.
+    const survivors = [];
+    for (let row = ROWS - 1; row >= 0; row -= 1) {
+      const gem = board[row][col];
+      if (gem !== null) {
+        survivors.push(gem);
+      }
+    }
+    // A full column has nothing to compact; leave it in place (Req 18.3).
+    if (survivors.length === ROWS) {
+      continue;
+    }
+    // Rewrite the column bottom-up: survivors fill the lowest cells and the
+    // remaining top cells become null. Copy each affected row lazily so an
+    // untouched row stays shared with the input.
+    let survivorIndex = 0;
+    for (let row = ROWS - 1; row >= 0; row -= 1) {
+      const nextGem = survivorIndex < survivors.length ? survivors[survivorIndex] : null;
+      survivorIndex += 1;
+      if (board[row][col] === nextGem) {
+        continue;
+      }
+      if (nextBoard[row] === board[row]) {
+        nextBoard[row] = board[row].slice();
+      }
+      nextBoard[row][col] = nextGem;
+    }
+  }
+  return nextBoard;
+}
+
+/**
+ * Return a NEW board with every empty Cell filled by a fresh valid Gem, without
+ * mutating the input board.
+ *
+ * After gravity has compacted each column, the only empty Cells are the `null`
+ * Cells at the tops of columns; this fills each of them with a freshly generated
+ * valid Gem drawn from {@link randomGem}, so once refill completes every Cell of
+ * the board holds exactly one Gem of a valid Gem_Type (Req 19.1, 19.2). Cells
+ * that already hold a Gem are left untouched. The refill is not constrained
+ * against forming Matches — any Matches the new Gems create are resolved by the
+ * screen's subsequent cascade step, not here.
+ *
+ * The function is PURE: it reads only its injected RNG and returns a fresh
+ * board. Randomness is injected via `rng` (default `Math.random`) and threaded
+ * through to `randomGem` so tests can supply a seeded generator for
+ * deterministic results. Following the module's non-mutating convention (see
+ * {@link setCell}), only the rows that contain a filled Cell are copied; the
+ * original board and its untouched rows are shared and left intact. A board with
+ * no empty Cell is returned as an unchanged copy that shares all of its rows.
+ *
+ * @param {Board} board  The board to derive the new board from.
+ * @param {() => number} [rng=Math.random]  Injectable random source in [0, 1).
+ * @returns {Board} A new, fully occupied board with every prior empty Cell
+ *   filled by a valid gem and all other cells unchanged.
+ */
+export function refill(board, rng = Math.random) {
+  const nextBoard = board.slice();
+  for (let row = 0; row < ROWS; row += 1) {
+    for (let col = 0; col < COLS; col += 1) {
+      if (board[row][col] !== null) {
+        continue;
+      }
+      // Copy the row lazily so a row is cloned at most once even when several of
+      // its cells are empty, and untouched rows stay shared with the input.
+      if (nextBoard[row] === board[row]) {
+        nextBoard[row] = board[row].slice();
+      }
+      nextBoard[row][col] = randomGem(rng);
+    }
+  }
+  return nextBoard;
+}
+
+/**
+ * Report whether a value is a single valid Gem: a non-null object whose `type`
+ * is one of the defined Gem_Types (see {@link isValidGemType}). This is the same
+ * validity notion used by {@link setCell} when it accepts a write.
+ *
+ * @param {*} gem  The candidate cell contents.
+ * @returns {boolean} true iff `gem` is a valid Gem.
+ */
+function isValidGem(gem) {
+  return gem !== null && typeof gem === 'object' && isValidGemType(gem.type);
+}
+
+/**
+ * Report whether the board has the correct shape and only valid gems in its
+ * occupied cells, allowing transient empties (Req 21.3, 21.2).
+ *
+ * This is the intermediate-state consistency check used between removal,
+ * Gravity, and Refill: the board must still be exactly ROWS×COLS (8×8), each row
+ * must be an array of exactly COLS cells, and every OCCUPIED cell must hold a
+ * valid Gem_Type. Empty cells (`null`) are permitted because they are the
+ * temporary holes that removal creates and Refill later fills (Req 21.2). Any
+ * value in a cell that is neither `null` nor a valid Gem — or any dimension that
+ * is not 8×8 — makes the board invalid, so an operation that would produce such
+ * a state can be rejected and the prior Stable_Board retained (Req 21.5).
+ *
+ * The check is PURE: it only reads the board and returns a boolean.
+ *
+ * @param {Board} board  The board to validate.
+ * @returns {boolean} true iff dimensions are ROWS×COLS and every occupied cell
+ *   holds a valid Gem_Type; `null` cells are allowed.
+ */
+export function isDimensionAndTypeValid(board) {
+  if (!Array.isArray(board) || board.length !== ROWS) {
+    return false;
+  }
+  for (let row = 0; row < ROWS; row += 1) {
+    const cells = board[row];
+    if (!Array.isArray(cells) || cells.length !== COLS) {
+      return false;
+    }
+    for (let col = 0; col < COLS; col += 1) {
+      const cell = cells[col];
+      // An empty cell is a permitted transient hole; only occupied cells must
+      // carry a valid Gem_Type.
+      if (cell !== null && !isValidGem(cell)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+/**
+ * Report whether the board is a Stable_Board: ready for the Player to make a new
+ * move (Req 21.1).
+ *
+ * A Stable_Board is the fully settled, ready-to-play state: the board is exactly
+ * ROWS×COLS (8×8), EVERY one of the 64 cells holds exactly one valid Gem (no
+ * empty cells and no invalid values), AND {@link findMatches} reports no Match.
+ * This is strictly stronger than {@link isDimensionAndTypeValid}: the latter
+ * tolerates transient empty cells during removal/Gravity/Refill, whereas a
+ * Stable_Board tolerates none. The screen presents the board as ready-to-play
+ * only when this predicate holds, so any operation that would leave an empty
+ * cell, an invalid gem, or a remaining Match is rejected and the prior
+ * Stable_Board is retained (Req 21.5, 21.6).
+ *
+ * The check is PURE: it only reads the board (via {@link findMatches}) and
+ * returns a boolean.
+ *
+ * @param {Board} board  The board to validate.
+ * @returns {boolean} true iff all 64 cells hold exactly one valid gem AND the
+ *   board contains zero Matches.
+ */
+export function isStableBoard(board) {
+  if (!isDimensionAndTypeValid(board)) {
+    return false;
+  }
+  // isDimensionAndTypeValid has confirmed the 8×8 shape and that no cell holds
+  // an invalid value; the only remaining way a cell can fail is by being empty.
+  for (let row = 0; row < ROWS; row += 1) {
+    for (let col = 0; col < COLS; col += 1) {
+      if (board[row][col] === null) {
+        return false;
+      }
+    }
+  }
+  return findMatches(board).length === 0;
 }

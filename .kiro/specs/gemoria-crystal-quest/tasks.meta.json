@@ -12,6 +12,44 @@
         "chatSessionId": "sess_866fae71-095c-41bf-a07b-c4d11fbd1228",
         "timestamp": 1789627546756
       }
+    ],
+    "2.1 Create `js/state/game-state.js`": [
+      {
+        "executionId": "db762d6f-05c7-491b-968b-9e9df3a3961e",
+        "chatSessionId": "sess_b00f295e-57f9-4659-b85e-68e42a683b55",
+        "timestamp": 1789628529257
+      },
+      {
+        "executionId": "db762d6f-05c7-491b-968b-9e9df3a3961e",
+        "chatSessionId": "sess_b00f295e-57f9-4659-b85e-68e42a683b55",
+        "timestamp": 1789628606678
+      }
+    ],
+    "2. Implement the central game-state store scaffold": [
+      {
+        "executionId": "db762d6f-05c7-491b-968b-9e9df3a3961e",
+        "chatSessionId": "sess_b00f295e-57f9-4659-b85e-68e42a683b55",
+        "timestamp": 1789628606832
+      }
+    ],
+    "3.1 Create `js/router.js`": [
+      {
+        "executionId": "6b3f270a-cd63-48bf-be94-f9d522eef333",
+        "chatSessionId": "sess_4e7a4003-a625-4ddc-b9c5-431371f720ad",
+        "timestamp": 1789628632585
+      },
+      {
+        "executionId": "6b3f270a-cd63-48bf-be94-f9d522eef333",
+        "chatSessionId": "sess_4e7a4003-a625-4ddc-b9c5-431371f720ad",
+        "timestamp": 1789628919688
+      }
+    ],
+    "3. Implement the general screen Router and lifecycle contract": [
+      {
+        "executionId": "6b3f270a-cd63-48bf-be94-f9d522eef333",
+        "chatSessionId": "sess_4e7a4003-a625-4ddc-b9c5-431371f720ad",
+        "timestamp": 1789628919795
+      }
     ]
   }
 }

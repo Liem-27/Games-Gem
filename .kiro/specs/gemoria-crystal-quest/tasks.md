@@ -19,15 +19,15 @@ Everything is deliberately additive: the Router is general, the registry is the 
   - Do NOT create any board, gameplay, sound, save, or level modules — those are future extension points.
   - _Requirements: 1.1, 1.2, 1.5_
 
-- [ ] 2. Implement the central game-state store scaffold
-  - [ ] 2.1 Create `js/state/game-state.js`
+- [x] 2. Implement the central game-state store scaffold
+  - [x] 2.1 Create `js/state/game-state.js`
     - Export `createStore(initialState = {})` returning `{ getState, setState, subscribe }`.
     - `getState` returns current state; `setState(patch)` merges the patch and notifies subscribers; `subscribe(fn)` registers a listener and returns an unsubscribe function.
     - Keep it minimal; add a comment marking it a Phase 1 scaffold / extension point (no progression, coins, lives, boosters, or level logic).
     - _Requirements: 1.3, 1.4, 1.6_
 
-- [ ] 3. Implement the general screen Router and lifecycle contract
-  - [ ] 3.1 Create `js/router.js`
+- [x] 3. Implement the general screen Router and lifecycle contract
+  - [x] 3.1 Create `js/router.js`
     - Export `createRouter(container)` returning `{ register(id, factory), navigate(id), getCurrentScreenId(), hasScreen(id) }`.
     - Define the Screen Lifecycle Contract in JSDoc: `mount(container, ctx)` required, `unmount()` optional, optional `title`; screens are produced by factories so each navigation yields a fresh instance.
     - `navigate(id)` on a registered id: call `unmount()` on the current screen (if any), instantiate and `mount()` the target into the container with a `ctx` exposing a `navigate` callback (and the store), and record it as current.

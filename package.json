@@ -1,0 +1,25 @@
+{
+  "name": "gemoria-crystal-quest",
+  "version": "0.1.0",
+  "description": "Gemoria: Crystal Quest — an original HTML5 match-3 puzzle game (Phase 1: foundation and main menu).",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "serve": "npx serve ."
+  },
+  "keywords": [
+    "match-3",
+    "puzzle",
+    "html5",
+    "game",
+    "es-modules"
+  ],
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "fast-check": "^3.23.1",
+    "jsdom": "^25.0.1",
+    "vitest": "^3.0.0"
+  }
+}

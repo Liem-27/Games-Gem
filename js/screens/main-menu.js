@@ -31,7 +31,7 @@
  * The game title text, rendered verbatim.
  * @type {string}
  */
-const TITLE_TEXT = 'Gemoria: Crystal Quest';
+const TITLE_TEXT = 'SnoopsGem : Crystal';
 
 /**
  * CSS class applied to a button while it is being activated, producing the

@@ -22,6 +22,7 @@
 
 import { mainMenuScreen } from '../screens/main-menu.js';
 import { createPlaceholderScreen } from '../screens/placeholder.js';
+import { createGameBoardScreen } from '../screens/game-board.js';
 
 /**
  * The declared set of Phase 1 screens, in registration order. `main-menu` is
@@ -36,7 +37,7 @@ import { createPlaceholderScreen } from '../screens/placeholder.js';
  */
 export const screenRegistry = [
   { id: 'main-menu', factory: () => mainMenuScreen() },
-  { id: 'play', factory: () => createPlaceholderScreen({ title: 'Play', message: 'Crystal matching is coming soon.' }) },
+  { id: 'play', factory: () => createGameBoardScreen() },
   { id: 'world-map', factory: () => createPlaceholderScreen({ title: 'World Map', message: 'The realm map is coming soon.' }) },
   { id: 'boosters', factory: () => createPlaceholderScreen({ title: 'Boosters', message: 'Boosters are coming soon.' }) },
   { id: 'achievements', factory: () => createPlaceholderScreen({ title: 'Achievements', message: 'Achievements are coming soon.' }) },

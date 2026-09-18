@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { findMatches, hasMatches } from '../js/match.js';
+import { findMatches, hasMatches, classifyMatches } from '../js/match.js';
 import { createBoard, setCell } from '../js/board.js';
 import { createGem } from '../js/gem.js';
 import { MIN_MATCH } from '../js/config/board-config.js';
@@ -275,5 +275,248 @@ describe('findMatches — deterministic sorted output', () => {
     const exactCells = Array.from({ length: MIN_MATCH }, (_, i) => [0, i]);
     const exactBoard = placeRun(createBoard(), exactCells, 'Ruby');
     expect(findMatches(exactBoard)).toHaveLength(MIN_MATCH);
+  });
+});
+
+/**
+ * Unit tests for Match Classification (classifyMatches in js/match.js).
+ *
+ * These cover the classification concern layered on top of match detection:
+ *   1. Shape classification — a plain 3-run is `three`; a straight 4-run is
+ *      `line_h4`/`line_v4` by orientation; a straight 5+ run is `rainbow5`
+ *      (Req 33.1).
+ *   2. Overlap analysis — a crossing horizontal/vertical pair is one combined
+ *      structure with a single pivot, classified `bomb_T` (interior pivot) or
+ *      `bomb_L` (pivot is an endpoint of BOTH runs) (Req 33.2, 33.3).
+ *   3. Precedence — exactly one `kind` per structure, ordered
+ *      T/L bomb > rainbow5 > line4 > three (Req 33.2).
+ *   4. Determinism — repeated calls on the same board return identical results.
+ *   5. `allCells` agreement — `classifyMatches(board).allCells` deep-equals
+ *      `findMatches(board)` for the same board (Req 33.1).
+ *
+ * Fixtures reuse the same non-mutating placeRun/setCell/createGem helpers as the
+ * findMatches tests above.
+ */
+describe('classifyMatches — shape classification', () => {
+  // Validates: Requirements 33.1
+  it('classifies a plain 3-run as `three` with a null pivot', () => {
+    const board = placeRun(createBoard(), [[2, 1], [2, 2], [2, 3]], 'Ruby');
+
+    const { structures } = classifyMatches(board);
+
+    expect(structures).toHaveLength(1);
+    expect(structures[0].kind).toBe('three');
+    expect(structures[0].pivot).toBeNull();
+    expect(structures[0].baseType).toBe('Ruby');
+    expect(structures[0].cells).toEqual([
+      { row: 2, col: 1 },
+      { row: 2, col: 2 },
+      { row: 2, col: 3 },
+    ]);
+  });
+
+  // Validates: Requirements 33.1
+  it('classifies a horizontal run of exactly 4 as `line_h4`', () => {
+    const board = placeRun(createBoard(), [[0, 0], [0, 1], [0, 2], [0, 3]], 'Sapphire');
+
+    const { structures } = classifyMatches(board);
+
+    expect(structures).toHaveLength(1);
+    expect(structures[0].kind).toBe('line_h4');
+    expect(structures[0].pivot).toBeNull();
+    expect(structures[0].cells).toHaveLength(4);
+  });
+
+  // Validates: Requirements 33.1
+  it('classifies a vertical run of exactly 4 as `line_v4`', () => {
+    const board = placeRun(createBoard(), [[1, 5], [2, 5], [3, 5], [4, 5]], 'Emerald');
+
+    const { structures } = classifyMatches(board);
+
+    expect(structures).toHaveLength(1);
+    expect(structures[0].kind).toBe('line_v4');
+    expect(structures[0].pivot).toBeNull();
+    expect(structures[0].cells).toHaveLength(4);
+  });
+
+  // Validates: Requirements 33.1
+  it('classifies a straight run of 5 or more as `rainbow5`', () => {
+    const board = placeRun(
+      createBoard(),
+      [[6, 0], [6, 1], [6, 2], [6, 3], [6, 4]],
+      'Topaz',
+    );
+
+    const { structures } = classifyMatches(board);
+
+    expect(structures).toHaveLength(1);
+    expect(structures[0].kind).toBe('rainbow5');
+    expect(structures[0].pivot).toBeNull();
+    expect(structures[0].cells).toHaveLength(5);
+  });
+});
+
+describe('classifyMatches — crossing (bomb) structures', () => {
+  // Validates: Requirements 33.2, 33.3
+  it('classifies a T intersection (interior pivot) as `bomb_T` with the crossing pivot', () => {
+    // Horizontal run at row 3, cols 1..3 (pivot interior); vertical run at
+    // col 2, rows 2..4 (pivot interior). They cross at (3, 2).
+    const board = placeRun(
+      createBoard(),
+      [
+        [3, 1], [3, 2], [3, 3], // horizontal
+        [2, 2], [4, 2], // vertical arms above/below the shared (3,2)
+      ],
+      'Amethyst',
+    );
+
+    const { structures } = classifyMatches(board);
+
+    expect(structures).toHaveLength(1);
+    expect(structures[0].kind).toBe('bomb_T');
+    expect(structures[0].pivot).toEqual({ row: 3, col: 2 });
+    expect(structures[0].baseType).toBe('Amethyst');
+    // Every cell of both runs, deduped and in reading order.
+    expect(structures[0].cells).toEqual([
+      { row: 2, col: 2 },
+      { row: 3, col: 1 },
+      { row: 3, col: 2 },
+      { row: 3, col: 3 },
+      { row: 4, col: 2 },
+    ]);
+  });
+
+  // Validates: Requirements 33.2, 33.3
+  it('classifies an L intersection (pivot is an endpoint of BOTH runs) as `bomb_L`', () => {
+    // Horizontal run at row 2, cols 2..4 (pivot 2,2 is the left endpoint);
+    // vertical run at col 2, rows 2..4 (pivot 2,2 is the top endpoint).
+    const board = placeRun(
+      createBoard(),
+      [
+        [2, 2], [2, 3], [2, 4], // horizontal
+        [3, 2], [4, 2], // vertical continuation below the shared corner (2,2)
+      ],
+      'Amber',
+    );
+
+    const { structures } = classifyMatches(board);
+
+    expect(structures).toHaveLength(1);
+    expect(structures[0].kind).toBe('bomb_L');
+    expect(structures[0].pivot).toEqual({ row: 2, col: 2 });
+    expect(structures[0].cells).toEqual([
+      { row: 2, col: 2 },
+      { row: 2, col: 3 },
+      { row: 2, col: 4 },
+      { row: 3, col: 2 },
+      { row: 4, col: 2 },
+    ]);
+  });
+
+  // Validates: Requirements 33.2
+  it('analyzes overlapping H/V runs as ONE combined structure, not two', () => {
+    // A crossing pair must collapse into a single structure with one pivot.
+    const board = placeRun(
+      createBoard(),
+      [
+        [3, 1], [3, 2], [3, 3], // horizontal
+        [2, 2], [4, 2], // vertical arms crossing at (3,2)
+      ],
+      'Ruby',
+    );
+
+    const { structures } = classifyMatches(board);
+
+    // Exactly one structure spanning every cell of both runs.
+    expect(structures).toHaveLength(1);
+    expect(structures[0].cells).toHaveLength(5);
+    expect(structures[0].pivot).toEqual({ row: 3, col: 2 });
+  });
+});
+
+describe('classifyMatches — precedence, determinism, and allCells agreement', () => {
+  // Validates: Requirements 33.2
+  it('assigns exactly one `kind` per structure by precedence (T/L > rainbow5 > line4 > three)', () => {
+    // A crossing structure (bomb) and, separately, a straight 5-run (rainbow5).
+    let board = placeRun(
+      createBoard(),
+      [[3, 1], [3, 2], [3, 3], [2, 2], [4, 2]], // T crossing → bomb_T
+      'Emerald',
+    );
+    board = placeRun(
+      board,
+      [[7, 0], [7, 1], [7, 2], [7, 3], [7, 4]], // straight 5 → rainbow5
+      'Sapphire',
+    );
+
+    const { structures } = classifyMatches(board);
+    const validKinds = ['three', 'line_h4', 'line_v4', 'rainbow5', 'bomb_T', 'bomb_L'];
+
+    expect(structures).toHaveLength(2);
+    structures.forEach((structure) => {
+      // Exactly one kind, drawn from the closed set.
+      expect(validKinds).toContain(structure.kind);
+    });
+
+    // The crossing beats a straight-line reading of the horizontal 3-run.
+    const kinds = structures.map((s) => s.kind).sort();
+    expect(kinds).toEqual(['bomb_T', 'rainbow5']);
+  });
+
+  // Validates: Requirements 33.1
+  it('never mis-classifies a plain 3-run as a bomb/line/rainbow', () => {
+    const board = placeRun(createBoard(), [[4, 4], [4, 5], [4, 6]], 'Topaz');
+
+    const { structures } = classifyMatches(board);
+
+    expect(structures).toHaveLength(1);
+    expect(structures[0].kind).toBe('three');
+    expect(structures[0].kind).not.toBe('bomb_T');
+    expect(structures[0].kind).not.toBe('bomb_L');
+    expect(structures[0].kind).not.toBe('line_h4');
+    expect(structures[0].kind).not.toBe('line_v4');
+    expect(structures[0].kind).not.toBe('rainbow5');
+  });
+
+  // Validates: Requirements 33.1, 33.2, 33.3
+  it('produces identical results across repeated calls (deterministic)', () => {
+    let board = placeRun(
+      createBoard(),
+      [[3, 1], [3, 2], [3, 3], [2, 2], [4, 2]], // bomb_T
+      'Ruby',
+    );
+    board = placeRun(board, [[0, 5], [0, 6], [0, 7]], 'Amber'); // three
+
+    const first = classifyMatches(board);
+    const second = classifyMatches(board);
+
+    expect(first).toEqual(second);
+  });
+
+  // Validates: Requirements 33.1
+  it('agrees with findMatches: allCells deep-equals findMatches for the same board', () => {
+    let board = placeRun(
+      createBoard(),
+      [[3, 1], [3, 2], [3, 3], [2, 2], [4, 2]], // crossing structure
+      'Emerald',
+    );
+    board = placeRun(board, [[6, 0], [6, 1], [6, 2], [6, 3], [6, 4]], 'Sapphire'); // rainbow5
+    board = placeRun(board, [[0, 6], [1, 6], [2, 6]], 'Amber'); // vertical three
+
+    const { allCells } = classifyMatches(board);
+
+    expect(allCells).toEqual(findMatches(board));
+  });
+
+  // Validates: Requirements 33.1
+  it('produces zero structures and an empty allCells when there is no run', () => {
+    const board = createBoard();
+
+    const { structures, allCells } = classifyMatches(board);
+
+    expect(structures).toEqual([]);
+    expect(allCells).toEqual([]);
+    // Agreement holds in the empty case too.
+    expect(allCells).toEqual(findMatches(board));
   });
 });

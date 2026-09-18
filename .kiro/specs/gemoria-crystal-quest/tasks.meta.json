@@ -534,6 +534,268 @@
         "chatSessionId": "sess_3a84dd9e-39db-4f57-97e7-4d9207d7ebdb",
         "timestamp": 1789639488311
       }
+    ],
+    "24.1 Create `js/screens/game-board.js` with structure, selection, and rendering": [
+      {
+        "executionId": "c773c53c-b53d-4916-9258-f8bb15731721",
+        "chatSessionId": "sess_e09bd96d-cfd6-42f9-8b1f-4228b3a0e4c9",
+        "timestamp": 1789698848301
+      },
+      {
+        "executionId": "c773c53c-b53d-4916-9258-f8bb15731721",
+        "chatSessionId": "sess_e09bd96d-cfd6-42f9-8b1f-4228b3a0e4c9",
+        "timestamp": 1789699082562
+      }
+    ],
+    "24.2 Implement swap orchestration on the Game Board screen": [
+      {
+        "executionId": "4d9722fb-b758-4764-b934-c2a0b934403b",
+        "chatSessionId": "sess_8791299e-76f7-498f-ae11-dfc42c01d395",
+        "timestamp": 1789699113344
+      },
+      {
+        "executionId": "b39ae0b3-7a4f-4a99-b0de-062e634e017b",
+        "chatSessionId": "sess_8791299e-76f7-498f-ae11-dfc42c01d395",
+        "timestamp": 1789699490830
+      }
+    ],
+    "24. Implement the Game Board screen (ONLY DOM module)": [
+      {
+        "executionId": "b39ae0b3-7a4f-4a99-b0de-062e634e017b",
+        "chatSessionId": "sess_8791299e-76f7-498f-ae11-dfc42c01d395",
+        "timestamp": 1789699491076
+      }
+    ],
+    "25.1 Add the bounded cascade loop to `js/screens/game-board.js`": [
+      {
+        "executionId": "2eb4a643-cebf-4469-a9c6-551a9505841e",
+        "chatSessionId": "sess_84b25d8e-2bb6-4bfb-877c-8bdaee686cf9",
+        "timestamp": 1789699534819
+      },
+      {
+        "executionId": "31d600f8-7893-4d52-a48c-2a532acea4f1",
+        "chatSessionId": "sess_84b25d8e-2bb6-4bfb-877c-8bdaee686cf9",
+        "timestamp": 1789700904368
+      }
+    ],
+    "25.2 Write unit test for cascade resolution": [
+      {
+        "executionId": "44d4da3e-35e5-40c6-b20a-21e6ec2d6396",
+        "chatSessionId": "sess_388b3b74-4bf8-44a3-9c13-80369bdc3763",
+        "timestamp": 1789700997389
+      },
+      {
+        "executionId": "132fda8c-a257-4b40-a242-ec94c5e9e4ce",
+        "chatSessionId": "sess_388b3b74-4bf8-44a3-9c13-80369bdc3763",
+        "timestamp": 1789701679605
+      }
+    ],
+    "25. Implement cascade resolution orchestration": [
+      {
+        "executionId": "132fda8c-a257-4b40-a242-ec94c5e9e4ce",
+        "chatSessionId": "sess_388b3b74-4bf8-44a3-9c13-80369bdc3763",
+        "timestamp": 1789701679785
+      }
+    ],
+    "26. Checkpoint — Ensure engine + orchestration tests pass": [
+      {
+        "executionId": "08df1ff0-38b5-4fde-8e57-8572a3110865",
+        "chatSessionId": "sess_30dcf43f-64fd-405f-8bb6-0fc4719d1b5d",
+        "timestamp": 1789701757638
+      },
+      {
+        "executionId": "08df1ff0-38b5-4fde-8e57-8572a3110865",
+        "chatSessionId": "sess_30dcf43f-64fd-405f-8bb6-0fc4719d1b5d",
+        "timestamp": 1789701863174
+      }
+    ],
+    "27.1 Add click + tap cell activation to `js/screens/game-board.js`": [
+      {
+        "executionId": "de717dc8-01db-4b3d-bb81-0abe393a9cc2",
+        "chatSessionId": "sess_6b070852-be5e-4db3-a4bf-fe49d36f7724",
+        "timestamp": 1789701911532
+      },
+      {
+        "executionId": "b5dd4d53-0e14-4b81-8141-cc979b8d774f",
+        "chatSessionId": "sess_6b070852-be5e-4db3-a4bf-fe49d36f7724",
+        "timestamp": 1789702510237
+      }
+    ],
+    "27. Implement mouse and touch input": [
+      {
+        "executionId": "b5dd4d53-0e14-4b81-8141-cc979b8d774f",
+        "chatSessionId": "sess_6b070852-be5e-4db3-a4bf-fe49d36f7724",
+        "timestamp": 1789702510593
+      }
+    ],
+    "28.1 Add a return control to `js/screens/game-board.js`": [
+      {
+        "executionId": "34221250-1bad-42f8-b3e7-708444d791f6",
+        "chatSessionId": "sess_57219b08-4306-4869-82d0-ec4799699e18",
+        "timestamp": 1789702588710
+      },
+      {
+        "executionId": "34221250-1bad-42f8-b3e7-708444d791f6",
+        "chatSessionId": "sess_57219b08-4306-4869-82d0-ec4799699e18",
+        "timestamp": 1789702813051
+      }
+    ],
+    "28. Add the return-to-menu control on the Game Board screen": [
+      {
+        "executionId": "34221250-1bad-42f8-b3e7-708444d791f6",
+        "chatSessionId": "sess_57219b08-4306-4869-82d0-ec4799699e18",
+        "timestamp": 1789702813264
+      }
+    ],
+    "29.1 Repoint the `'play'` entry in `js/config/screens.js`": [
+      {
+        "executionId": "d55d36af-2609-49bc-97b1-4f024939c14f",
+        "chatSessionId": "sess_650ebca7-d03c-4778-b0b4-38149755f25f",
+        "timestamp": 1789702855948
+      },
+      {
+        "executionId": "d55d36af-2609-49bc-97b1-4f024939c14f",
+        "chatSessionId": "sess_650ebca7-d03c-4778-b0b4-38149755f25f",
+        "timestamp": 1789702967322
+      }
+    ],
+    "29. Integrate the Game Board screen into the registry": [
+      {
+        "executionId": "d55d36af-2609-49bc-97b1-4f024939c14f",
+        "chatSessionId": "sess_650ebca7-d03c-4778-b0b4-38149755f25f",
+        "timestamp": 1789702967480
+      }
+    ],
+    "30. Implement responsive board layout": [
+      {
+        "executionId": "386b5ccb-903a-4819-8eb6-e04d8447f560",
+        "chatSessionId": "sess_c5fa23b9-2256-40ae-9241-9f489080c72b",
+        "timestamp": 1789703039567
+      },
+      {
+        "executionId": "386b5ccb-903a-4819-8eb6-e04d8447f560",
+        "chatSessionId": "sess_c5fa23b9-2256-40ae-9241-9f489080c72b",
+        "timestamp": 1789703336262
+      }
+    ],
+    "31.1 Add property test P1 (Stable_Board invariant)": [
+      {
+        "executionId": "55f15cc2-bdfb-49b4-af8d-c74b6c743477",
+        "chatSessionId": "sess_e61dc488-25e2-4173-bc48-548e0b5c6a11",
+        "timestamp": 1789705080880
+      },
+      {
+        "executionId": "cc56df93-7f64-460b-810e-1cf67a397596",
+        "chatSessionId": "sess_e61dc488-25e2-4173-bc48-548e0b5c6a11",
+        "timestamp": 1789705761505
+      }
+    ],
+    "31. Write the required property test — Stable_Board invariant after cascade": [
+      {
+        "executionId": "cc56df93-7f64-460b-810e-1cf67a397596",
+        "chatSessionId": "sess_e61dc488-25e2-4173-bc48-548e0b5c6a11",
+        "timestamp": 1789705761739
+      }
+    ],
+    "32.1 Add property test P5 (gravity multiset/order preservation)": [
+      {
+        "executionId": "ae20630f-f7ad-4fc5-8e43-f92f9f471072",
+        "chatSessionId": "sess_5aee7c1a-b31d-4c18-9fb3-b90d058796e1",
+        "timestamp": 1789705819237
+      },
+      {
+        "executionId": "109190d8-5381-42fd-91b3-8f78a0a7334b",
+        "chatSessionId": "sess_5aee7c1a-b31d-4c18-9fb3-b90d058796e1",
+        "timestamp": 1789706377595
+      }
+    ],
+    "32. Write the required property test — Gravity preserves per-column multiset": [
+      {
+        "executionId": "109190d8-5381-42fd-91b3-8f78a0a7334b",
+        "chatSessionId": "sess_5aee7c1a-b31d-4c18-9fb3-b90d058796e1",
+        "timestamp": 1789706377774
+      }
+    ],
+    "33.1 Add jsdom UI/navigation integration tests": [
+      {
+        "executionId": "9c8fb817-541b-44ca-b725-9191656ea847",
+        "chatSessionId": "sess_9a235e7b-4cda-41e7-ac5a-695c360e5953",
+        "timestamp": 1789706445055
+      },
+      {
+        "executionId": "9c8fb817-541b-44ca-b725-9191656ea847",
+        "chatSessionId": "sess_9a235e7b-4cda-41e7-ac5a-695c360e5953",
+        "timestamp": 1789706769276
+      }
+    ],
+    "33. Write integration / end-to-end tests for the Game Board screen (jsdom)": [
+      {
+        "executionId": "9c8fb817-541b-44ca-b725-9191656ea847",
+        "chatSessionId": "sess_9a235e7b-4cda-41e7-ac5a-695c360e5953",
+        "timestamp": 1789706769422
+      }
+    ],
+    "34.1 Update user-visible title text only": [
+      {
+        "executionId": "82496cc3-fa93-4009-9ab9-b424e878529d",
+        "chatSessionId": "sess_6eef1e19-3f32-4bf7-9fbc-1a94ee35108d",
+        "timestamp": 1789706874520
+      },
+      {
+        "executionId": "82496cc3-fa93-4009-9ab9-b424e878529d",
+        "chatSessionId": "sess_6eef1e19-3f32-4bf7-9fbc-1a94ee35108d",
+        "timestamp": 1789707147524
+      }
+    ],
+    "34. Final cleanup — rename user-visible game title to \"SnoopsGem : Crystal\"": [
+      {
+        "executionId": "82496cc3-fa93-4009-9ab9-b424e878529d",
+        "chatSessionId": "sess_6eef1e19-3f32-4bf7-9fbc-1a94ee35108d",
+        "timestamp": 1789707147694
+      }
+    ],
+    "35. Final checkpoint — Ensure all Phase 2 tests pass": [
+      {
+        "executionId": "c8274dad-d4ce-4d21-bdfc-b46e36059271",
+        "chatSessionId": "sess_7bd02376-150d-446b-9686-9cbf9e224498",
+        "timestamp": 1789707189212
+      },
+      {
+        "executionId": "c8274dad-d4ce-4d21-bdfc-b46e36059271",
+        "chatSessionId": "sess_7bd02376-150d-446b-9686-9cbf9e224498",
+        "timestamp": 1789707346261
+      }
+    ],
+    "37.1 Add `classifyMatches` to `js/match.js`": [
+      {
+        "executionId": "a38667e2-bb8e-4711-9c91-ca3a2179aef0",
+        "chatSessionId": "sess_6a9dc275-d3bc-43c7-8bb6-0ff24a9657ae",
+        "timestamp": 1789714848554
+      },
+      {
+        "executionId": "a38667e2-bb8e-4711-9c91-ca3a2179aef0",
+        "chatSessionId": "sess_6a9dc275-d3bc-43c7-8bb6-0ff24a9657ae",
+        "timestamp": 1789715227543
+      }
+    ],
+    "37.2 Write unit tests for match classification": [
+      {
+        "executionId": "e1e5abc1-6554-46e0-bfb2-09bb3fe6d17d",
+        "chatSessionId": "sess_643282f3-d89d-4588-9fac-27b16a298c2e",
+        "timestamp": 1789715294268
+      },
+      {
+        "executionId": "e1e5abc1-6554-46e0-bfb2-09bb3fe6d17d",
+        "chatSessionId": "sess_643282f3-d89d-4588-9fac-27b16a298c2e",
+        "timestamp": 1789715529513
+      }
+    ],
+    "37. Add match classification alongside unchanged `findMatches` (PURE)": [
+      {
+        "executionId": "e1e5abc1-6554-46e0-bfb2-09bb3fe6d17d",
+        "chatSessionId": "sess_643282f3-d89d-4588-9fac-27b16a298c2e",
+        "timestamp": 1789715529749
+      }
     ]
   }
 }

@@ -1,4 +1,4 @@
-# Gemoria: Crystal Quest
+# SnoopsGem : Crystal
 
 An original HTML5 match-3 puzzle game with a fantasy crystal visual theme, built with vanilla JavaScript ES modules (no framework).
 

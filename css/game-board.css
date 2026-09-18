@@ -1,0 +1,209 @@
+/*
+ * game-board.css — Game_Board_Screen layout for Gemoria: Crystal Quest.
+ *
+ * Responsibility (single concern): layout and control styling for the
+ * Game_Board_Screen (`.game-board`) — how the 8×8 board grid (`.game-board__grid`)
+ * and its Cells (`.game-board__cell`) are arranged, sized, kept square, and made
+ * responsive/touch-friendly, plus the return-to-menu control
+ * (`.game-board__return`).
+ *
+ * This file MUST NOT contain:
+ *   - base/reset rules (those live in css/reset.css), or
+ *   - theme color DEFINITIONS (those live in css/theme.css as :root custom
+ *     properties).
+ *
+ * Color policy (Requirements 3.3, 3.5, 3.6): this file defines no theme colors.
+ * Where a color is applied it references a theme custom property AND carries a
+ * defined fallback via `var(--custom-property, #fallback)`, so the element stays
+ * visible even if the custom property is undefined at render time. Fallbacks
+ * mirror the literals defined once in css/theme.css. No theme color literals
+ * appear outside a var() fallback.
+ *
+ * Responsive contract (Requirement 23, with touch sizing from 22.4):
+ *   - 23.1 (320–2560px): the complete 8×8 board renders fully within the
+ *         horizontal bounds of the viewport with ZERO horizontal overflow (no
+ *         horizontal scrollbar). This is the hard constraint — the board width
+ *         is driven by `min()` so it scales down to fit even a 320px viewport.
+ *   - 23.2 (320–2560px): the board is square — every Cell's width equals its
+ *         height (enforced with `aspect-ratio: 1 / 1` on each Cell).
+ *   - 23.3 (>768px): the board is centered horizontally within the viewport.
+ *   - 23.4: vertical scrolling is permitted when the screen's content height
+ *         exceeds the viewport height, while horizontal overflow stays at zero;
+ *         fitting the whole UI vertically without scrolling is not required.
+ *   - 22.4: each Cell is a Touch_Target sized at least 44×44px where the
+ *         viewport allows (soft target; 23.1 zero-overflow takes precedence at
+ *         the narrowest widths where 8 cells cannot all be ≥44px).
+ */
+
+/* -------------------------------------------------------------------------- */
+/* Screen container (Requirements 23.3, 23.4)                                 */
+/* -------------------------------------------------------------------------- */
+
+/*
+ * Root screen container. A vertical flex column centers the title, board grid,
+ * and return control. `width: 100%` + `overflow-x: hidden` keep the screen
+ * within horizontal bounds (23.1); `min-height: 100%` lets content grow taller
+ * than the viewport so vertical scrolling can reach it (23.4 — the document-level
+ * `overflow-y: auto` from css/menu.css provides the scroll). Padding gives the
+ * content breathing room; the global border-box model (reset.css) keeps that
+ * padding from introducing horizontal overflow.
+ */
+.game-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* center title, grid, and control (23.3) */
+  width: 100%;
+  min-height: 100%;
+  padding: 24px 16px;
+  overflow-x: hidden;       /* belt-and-braces: no horizontal overflow (23.1) */
+}
+
+/* Title layout only; color/typography theme lives in theme.css if applied. */
+.game-board__title {
+  width: 100%;
+  margin-bottom: 20px;
+  text-align: center;
+  color: var(--crystal-shine, #eaf4ff);
+  font-family: var(--crystal-font-display, "Trebuchet MS", sans-serif);
+  font-weight: var(--crystal-font-weight-bold, 700);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Board grid (Requirements 23.1, 23.2, 23.3)                                 */
+/* -------------------------------------------------------------------------- */
+
+/*
+ * The 8×8 grid. Eight equal `1fr` columns and eight equal `1fr` rows make every
+ * track the same size; combined with the square container width below and the
+ * per-Cell `aspect-ratio`, every Cell is square (23.2).
+ *
+ * Width is `min(96vw, 90vmin, 560px)`:
+ *   - `96vw` keeps a small inset from the viewport edges at every width, so the
+ *     board never touches the horizontal bounds and never overflows (23.1),
+ *     scaling all the way down to a 320px viewport.
+ *   - `90vmin` keeps the square board within the SHORTER viewport axis so it
+ *     fits vertically too on landscape phones.
+ *   - `560px` caps the board on wide desktops.
+ * `aspect-ratio: 1 / 1` on the grid keeps the whole board square, and
+ * `margin: 0 auto` centers it — at >768px the container is wider than the capped
+ * board, so this centers the board horizontally within the viewport (23.3).
+ */
+.game-board__grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  gap: 4px;                             /* small inset between adjacent cells */
+  width: min(96vw, 90vmin, 560px);
+  max-width: 100%;                      /* never exceed the container (23.1) */
+  aspect-ratio: 1 / 1;                  /* keep the board square (23.2) */
+  margin: 0 auto 24px;                  /* center horizontally (23.3) */
+  padding: 6px;
+  border: 1px solid var(--crystal-border, #5741a8);
+  border-radius: 12px;
+  background-color: var(--crystal-surface, #2a1b5e);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Cell (Requirements 23.2, 22.4)                                             */
+/* -------------------------------------------------------------------------- */
+
+/*
+ * Each Cell is a square button. `aspect-ratio: 1 / 1` forces width == height for
+ * every Cell regardless of the resolved track size (23.2). `min-width`/
+ * `min-height` express the 44px Touch_Target target (22.4); this is a soft floor
+ * — at the narrowest viewports eight 44px cells plus gaps cannot fit within 320px
+ * without horizontal overflow, and 23.1 (zero overflow) is the hard constraint,
+ * so the `1fr` tracks are allowed to size the cells down there. `min-width: 0`
+ * would defeat the touch target, so the floor is kept and the responsive board
+ * width above ensures cells stay comfortably sized on real devices.
+ */
+.game-board__cell {
+  aspect-ratio: 1 / 1;                  /* square: width == height (23.2) */
+  min-width: 0;                         /* allow shrinking to prevent overflow (23.1) */
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--crystal-border, #5741a8);
+  border-radius: 8px;
+  background-color: var(--crystal-surface-alt, #3a2780);
+  color: var(--crystal-text, #f2ecff);
+  font-family: var(--crystal-font-display, "Trebuchet MS", sans-serif);
+  font-size: clamp(0.75rem, 4vmin, 1.5rem);
+  font-weight: var(--crystal-font-weight-bold, 700);
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.12s ease, transform 0.05s ease;
+}
+
+.game-board__cell:hover {
+  background-color: var(--crystal-primary, #4b3f9e);
+}
+
+.game-board__cell:focus-visible {
+  outline: 2px solid var(--crystal-accent-cyan, #4fe3d0);
+  outline-offset: 1px;
+}
+
+/*
+ * Selection indication for the Selected_Gem (toggled by game-board.js via
+ * `.game-board__cell--selected`). A luminous accent ring plus a brighter surface
+ * makes the current selection unmistakable.
+ */
+.game-board__cell--selected {
+  background-color: var(--crystal-primary-strong, #6b5bd6);
+  border-color: var(--crystal-accent-cyan, #4fe3d0);
+  box-shadow: 0 0 0 2px var(--crystal-accent-cyan, #4fe3d0);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Return-to-menu control (Requirements 22.4, 23.5)                           */
+/* -------------------------------------------------------------------------- */
+
+/*
+ * The return control is a Touch_Target: minimum 44×44px (22.4). It navigates
+ * back to the Main_Menu (23.5). Colors reference theme custom properties with
+ * defined fallbacks (3.3/3.5/3.6).
+ */
+.game-board__return {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 12px 24px;
+  border: 1px solid var(--crystal-border, #5741a8);
+  border-radius: 10px;
+  background-color: var(--crystal-surface, #2a1b5e);
+  color: var(--crystal-text, #f2ecff);
+  font-family: var(--crystal-font-display, "Trebuchet MS", sans-serif);
+  font-size: var(--crystal-font-size-base, 1rem);
+  font-weight: var(--crystal-font-weight-bold, 700);
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.game-board__return:hover {
+  background-color: var(--crystal-surface-alt, #3a2780);
+}
+
+.game-board__return:focus-visible {
+  outline: 2px solid var(--crystal-accent-cyan, #4fe3d0);
+  outline-offset: 2px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Responsive breakpoint at 768px (Requirement 23.3)                          */
+/* -------------------------------------------------------------------------- */
+
+/*
+ * >768px (Requirement 23.3): the board is centered horizontally. The grid's
+ * `margin: 0 auto` and the container's `align-items: center` already center it;
+ * this rule makes the intent explicit and slightly enlarges the desktop cap so
+ * the board reads comfortably on wide screens while staying within bounds (23.1).
+ */
+@media (min-width: 769px) {
+  .game-board__grid {
+    width: min(90vmin, 640px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

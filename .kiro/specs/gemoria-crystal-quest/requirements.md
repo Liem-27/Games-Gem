@@ -357,3 +357,336 @@ Phase 2 keeps board configuration data-driven where practical (board dimensions 
 12. THE SnoopsGem_Game test suite SHALL include a test verifying that cascade resolution continues until the Board contains zero Matches, resulting in a Stable_Board.
 13. THE SnoopsGem_Game test suite SHALL include a property test verifying that, for many randomly generated inputs, the Board contains exactly one valid Gem per Cell and zero Matches after cascade resolution completes (Stable_Board invariant).
 14. THE SnoopsGem_Game test suite SHALL include a property test verifying that, for many randomly generated Boards, applying Gravity preserves the multiset of non-empty Gems in each column (Gravity does not create or destroy Gems).
+
+---
+
+## Phase 3 Introduction: Special Gems, Scoring, and Data-Driven Levels
+
+Phase 3 extends the completed Phase 2 core match-3 engine with special gems, special-gem activation and combinations, a scoring system, and the foundation of a data-driven level system with move limits, objectives, and win/lose state. Phase 3 builds on the Phase 1 foundation (modular ES-module architecture, Router, Main_Menu, Placeholder_Screens) and the Phase 2 engine (Board, Gem, Match, Gravity, Refill, Cascade, Stable_Board). Phase 2 is complete and MUST remain functional.
+
+Phase 3 is strictly additive and preserves the existing pure-logic / DOM-separated architecture established in Phase 2. Pure game logic (special-gem creation, activation, combinations, score calculation, objective tracking, move accounting, and level state transitions) remains independent of the DOM. The Game_Board_Screen may orchestrate user interaction and rendering but MUST NOT duplicate pure engine algorithms such as match detection, Gravity, Refill, special-effect calculation, score formulas, or objective formulas. The existing board, gem, and match module APIs remain backward-compatible unless a documented Phase 3 requirement requires a change. All existing Phase 2 tests MUST continue to pass.
+
+Phase 3 continues to use no framework: Vanilla JavaScript ES_Modules, with Vitest for tests and fast-check for property tests. Property tests MUST run a minimum of 100 iterations each. All gameplay logic MUST be deterministic given the same board, actions, level configuration, and RNG seed, using an injectable RNG rather than uncontrolled random calls where deterministic behavior is required. Swipe and drag gestures remain out of scope; interaction stays click/tap based.
+
+The official game name remains "SnoopsGem : Crystal" and the internal spec identifier remains gemoria-crystal-quest.
+
+Explicitly out of scope for Phase 3: World Map, lives/hearts, coins/economy, boosters outside Special Gems, shop/store, achievements, sound/music, save/load persistence, online features, accounts/authentication, multiplayer, ads, social features, backend/server, full 100-level content production, advanced obstacles (ice, chain, stone, portals, blockers), and animation-heavy effects not required for correctness.
+
+## Phase 3 Glossary
+
+- **Special_Gem**: A Gem that carries a Special_Gem_Type other than normal and produces a defined clearing effect when activated. A Special_Gem retains an underlying Base_Gem_Type where applicable.
+- **Base_Gem_Type**: One of the six Phase 2 Gem_Types (Ruby, Sapphire, Emerald, Topaz, Amethyst, Amber) that identifies the color category of a Gem.
+- **Special_Gem_Type**: The category of a Gem with respect to special behavior. The five Special_Gem_Types are normal, line_horizontal, line_vertical, rainbow, and bomb.
+- **Normal_Gem**: A Gem whose Special_Gem_Type is normal and whose Base_Gem_Type is one of the six Base_Gem_Types.
+- **Line_Crystal**: A Special_Gem of Special_Gem_Type line_horizontal or line_vertical that, when activated, clears an entire row or column respectively.
+- **Rainbow_Crystal**: A Special_Gem of Special_Gem_Type rainbow that, when activated in combination with a Normal_Gem, clears all Gems sharing the selected Normal_Gem's Base_Gem_Type.
+- **Bomb_Crystal**: A Special_Gem of Special_Gem_Type bomb that, when activated, clears a defined surrounding area centered on the bomb.
+- **Gem_ID**: A unique identifier assigned to a Gem that distinguishes it from every other Gem within the active Board state.
+- **Creation_Cell**: The deterministically chosen Cell within a resolved Match at which a newly created Special_Gem is placed.
+- **Special_Activation**: The operation of applying a Special_Gem's clearing effect to the Board.
+- **Special_Combination**: The effect produced when two Special_Gems are swapped into each other, taking precedence over individual activation.
+- **Level_Configuration**: A data-driven definition of a level, specifying at minimum a level identifier, Board dimensions, available Base_Gem_Types, a Move_Limit, an Objective_Type, and an Objective_Target.
+- **Objective**: A completion goal for a level defined by an Objective_Type and a numeric Objective_Target.
+- **Objective_Type**: The category of an Objective. The Phase 3 Objective_Types are score target and collect-gem-type target.
+- **Objective_Target**: The numeric value that the tracked Objective quantity must reach or exceed for the Objective to be satisfied.
+- **Objective_Progress**: The current tracked quantity measured against the Objective_Target.
+- **Move_Limit**: The maximum number of committed player moves permitted in a level.
+- **Remaining_Moves**: The number of committed moves still available in the active level.
+- **Score**: The non-negative numeric total accumulated during an active level.
+- **Level_Status**: The state of the active level, drawn from the finite set playing, won, and lost.
+- **Committed_Move**: A player-initiated Swap or Special_Combination that results in at least one Match or valid special effect and is retained.
+- **RNG**: The injectable random number generator used by the Board_Engine so that gem generation is deterministic given a fixed seed.
+- **Level_Engine**: The pure ES_Module solely responsible for Level_Configuration validation, Move_Limit tracking, Objective tracking, Score accumulation, and Level_Status transitions, independent of the DOM.
+
+## Phase 3 Requirements
+
+### Requirement 26: Special Gem Model
+
+**User Story:** As a Player, I want gems that carry special powers, so that clever matches can produce more powerful clears.
+
+#### Acceptance Criteria
+
+1. THE Board_Engine SHALL support exactly five Special_Gem_Types: normal, line_horizontal, line_vertical, rainbow, and bomb.
+2. WHERE a Gem's Special_Gem_Type is normal, THE Board_Engine SHALL assign that Gem exactly one Base_Gem_Type drawn from the six Base_Gem_Types.
+3. WHERE a Gem's Special_Gem_Type is line_horizontal, line_vertical, or bomb, THE Board_Engine SHALL retain the underlying Base_Gem_Type of that Gem.
+4. THE Board_Engine SHALL assign every Gem a Gem_ID that is unique within the active Board state.
+5. THE Board_Engine SHALL represent each Special_Gem with its Base_Gem_Type where applicable, its Special_Gem_Type, and its Gem_ID.
+6. THE Board_Engine SHALL make every Normal_Gem distinguishable from every Special_Gem by Special_Gem_Type.
+7. IF a Gem is assigned a Special_Gem_Type that is not one of the five defined Special_Gem_Types, THEN THE Board_Engine SHALL reject the assignment and retain the prior Board state unchanged.
+8. WHERE a Board contains only Normal_Gems, THE Board_Engine SHALL perform matching, swapping, removal, Gravity, Refill, Cascade, and Stable_Board validation identically to Phase 2 behavior.
+
+### Requirement 27: Line Crystal Creation
+
+**User Story:** As a Player, I want matching four gems in a row or column to create a line crystal, so that I can clear a whole line.
+
+#### Acceptance Criteria
+
+1. WHEN a Match of exactly four compatible Normal_Gems is resolved horizontally, THE Board_Engine SHALL create a line_horizontal Line_Crystal at the designated Creation_Cell.
+2. WHEN a Match of exactly four compatible Normal_Gems is resolved vertically, THE Board_Engine SHALL create a line_vertical Line_Crystal at the designated Creation_Cell.
+3. THE Board_Engine SHALL select the Creation_Cell for a Line_Crystal deterministically from the matched Cells, independent of DOM ordering.
+4. WHEN a Line_Crystal is created from a resolved Match, THE Board_Engine SHALL preserve the created Line_Crystal at its Creation_Cell while removing the other matched Gems of that Match.
+5. WHEN a Match of exactly three Normal_Gems is resolved, THE Board_Engine SHALL remove the matched Gems without creating any Special_Gem.
+
+### Requirement 28: Rainbow Crystal Creation
+
+**User Story:** As a Player, I want matching five gems in a line to create a rainbow crystal, so that I can clear all gems of one type.
+
+#### Acceptance Criteria
+
+1. WHEN a straight Match of five or more compatible Normal_Gems is resolved, THE Board_Engine SHALL create a Rainbow_Crystal at the designated Creation_Cell.
+2. THE Board_Engine SHALL select the Creation_Cell for a Rainbow_Crystal deterministically from the matched Cells, independent of DOM ordering.
+3. WHEN a Rainbow_Crystal is created from a resolved Match, THE Board_Engine SHALL preserve the created Rainbow_Crystal at its Creation_Cell while removing the remaining matched Gems of that Match.
+4. WHEN a straight Match of fewer than five Normal_Gems is resolved, THE Board_Engine SHALL create no Rainbow_Crystal.
+
+### Requirement 29: Bomb Crystal Creation
+
+**User Story:** As a Player, I want intersecting matches to create a bomb crystal, so that I can clear a surrounding area.
+
+#### Acceptance Criteria
+
+1. WHEN a Match forms a T-shaped or L-shaped intersection of compatible Normal_Gems, THE Board_Engine SHALL create a Bomb_Crystal at the designated Creation_Cell.
+2. THE Board_Engine SHALL select the Creation_Cell for a Bomb_Crystal deterministically from the intersecting matched Cells, independent of DOM ordering.
+3. WHEN a Bomb_Crystal is created from a resolved intersection Match, THE Board_Engine SHALL preserve the created Bomb_Crystal at its Creation_Cell while removing the remaining matched Gems of that Match.
+4. WHEN a simple straight Match that does not satisfy a T-shaped or L-shaped intersection is resolved, THE Board_Engine SHALL create no Bomb_Crystal.
+
+### Requirement 30: Special Gem Activation
+
+**User Story:** As a Player, I want activating a special gem to clear gems, so that special gems have a meaningful effect.
+
+#### Acceptance Criteria
+
+1. WHEN a line_horizontal Line_Crystal is activated, THE Board_Engine SHALL clear all applicable Gems in the row containing that Line_Crystal.
+2. WHEN a line_vertical Line_Crystal is activated, THE Board_Engine SHALL clear all applicable Gems in the column containing that Line_Crystal.
+3. WHEN a Rainbow_Crystal is activated in combination with a selected Normal_Gem, THE Board_Engine SHALL determine the selected Normal_Gem's Base_Gem_Type before removal and SHALL clear all applicable Gems whose Base_Gem_Type matches that determined Base_Gem_Type.
+4. WHEN a Bomb_Crystal is activated, THE Board_Engine SHALL clear the defined surrounding area, defaulting to the 3x3 area centered on the Bomb_Crystal, clipped at Board boundaries.
+5. WHILE a Special_Gem is positioned at an edge or corner of the Board, THE Board_Engine SHALL clip its effect to valid Cells and SHALL NOT access any Cell outside the range 0 to 7 inclusive for row or column.
+6. WHEN a Special_Activation removes one or more Gems, THE Board_Engine SHALL integrate the removal into the existing Cascade process by removing affected Gems, applying Gravity, applying Refill, detecting Matches, and continuing until the Board reaches a Stable_Board.
+7. WHERE a Special_Activation affects a Cell containing another Special_Gem within the same resolution, THE Board_Engine SHALL apply a deterministic chain-activation behavior and SHALL terminate the chain without an infinite loop.
+
+### Requirement 31: Special Gem Combinations
+
+**User Story:** As a Player, I want to combine two special gems, so that I can trigger more powerful clears.
+
+#### Acceptance Criteria
+
+1. WHEN a Line_Crystal is combined with a Line_Crystal, THE Board_Engine SHALL clear the full row and the full column intersecting at the combination location.
+2. WHEN a Rainbow_Crystal is combined with a Normal_Gem, THE Board_Engine SHALL clear every Normal_Gem whose Base_Gem_Type equals the selected Normal_Gem's Base_Gem_Type.
+3. WHEN a Rainbow_Crystal is combined with a Line_Crystal, THE Board_Engine SHALL apply a deterministic enhanced line-clear affecting the selected Base_Gem_Type, with the exact affected rows and columns defined in the Design and covered by tests.
+4. WHEN a Rainbow_Crystal is combined with a Rainbow_Crystal, THE Board_Engine SHALL apply a deterministic board-wide clearing effect defined in the Design and covered by tests.
+5. WHEN a Bomb_Crystal is combined with a Line_Crystal, THE Board_Engine SHALL apply a deterministic combined area-and-line clearing effect defined in the Design and covered by tests.
+6. WHEN a Bomb_Crystal is combined with a Rainbow_Crystal, THE Board_Engine SHALL apply a deterministic enhanced clearing effect defined in the Design and covered by tests.
+7. WHEN a Bomb_Crystal is combined with a Bomb_Crystal, THE Board_Engine SHALL apply a deterministic larger-area clearing effect defined in the Design and covered by tests.
+8. WHEN a Special_Combination is triggered, THE Board_Engine SHALL apply the combination effect in precedence over individual activation and SHALL consume each of the two participating Special_Gems exactly once.
+9. WHERE two Special_Gems co-exist on the Board without being swapped into Adjacent_Cells, THE Board_Engine SHALL NOT apply a Special_Combination merely because both Special_Gems are present.
+
+### Requirement 32: Special Gem Swap Rules
+
+**User Story:** As a Player, I want special gems to work within the existing swap system, so that controls stay consistent.
+
+#### Acceptance Criteria
+
+1. THE Board_Engine SHALL allow a Special_Gem to participate in the Phase 2 adjacent-Swap system as a swappable Gem.
+2. WHEN a Special_Gem is swapped with an adjacent Normal_Gem and the Swap is valid, THE Board_Engine SHALL activate the Special_Gem according to the Phase 3 activation rules.
+3. WHEN a Special_Gem is swapped with an adjacent Special_Gem, THE Board_Engine SHALL resolve the interaction using the Special_Combination rules of Requirement 31.
+4. IF a Swap involving a Special_Gem produces no Match and no valid Special_Activation and no valid Special_Combination, THEN THE Board_Engine SHALL revert the Swap according to the Phase 2 revert rules.
+5. THE Board_Engine SHALL retain the existing Phase 2 selection and deselection behavior unchanged for both Normal_Gems and Special_Gems.
+
+### Requirement 33: Match Resolution and Special Creation
+
+**User Story:** As a Player, I want matches classified correctly, so that the right special gems are created.
+
+#### Acceptance Criteria
+
+1. WHEN match detection runs, THE Board_Engine SHALL distinguish among a 3-match, a horizontal 4-match, a vertical 4-match, a straight 5-or-more match, a T-shaped match, and an L-shaped match.
+2. WHERE the Board contains multiple Matches in a single resolution, THE Board_Engine SHALL resolve them deterministically.
+3. WHERE a horizontal run and a vertical run overlap, THE Board_Engine SHALL analyze them as a combined structure before deciding Special_Gem creation.
+4. WHEN a Match qualifies for Special_Gem creation, THE Board_Engine SHALL create the Special_Gem before performing the final removal of matched Gems.
+5. WHEN a Match includes an existing Special_Gem, THE Board_Engine SHALL handle that Special_Gem through the activation rules and SHALL NOT silently convert it to a Normal_Gem.
+6. WHEN match resolution and all Cascades complete, THE Board_Engine SHALL leave the Board as a Stable_Board, unless the Level_Status intentionally ends the move first.
+
+### Requirement 34: Score System
+
+**User Story:** As a Player, I want to earn points, so that my performance is measured.
+
+#### Acceptance Criteria
+
+1. THE Level_Engine SHALL maintain a numeric Score for the active level.
+2. WHEN a normal Match is removed, THE Level_Engine SHALL increase the Score based on the number of Gems removed.
+3. WHERE a Match removes more Gems than the minimum of three, THE Level_Engine SHALL add a larger-match bonus beyond the base removal Score.
+4. WHEN a Special_Gem is created, THE Level_Engine SHALL add a special-creation bonus to the Score.
+5. WHEN a Special_Gem is activated, THE Level_Engine SHALL add a special-activation bonus to the Score based on the number and effect of the Gems affected.
+6. WHEN a Special_Combination is triggered, THE Level_Engine SHALL add a combination bonus to the Score.
+7. WHEN a Cascade occurs, THE Level_Engine SHALL add a cascade bonus that distinguishes cascade depth such that later Cascades receive an appropriate bonus.
+8. WHERE the same Board, actions, Level_Configuration, and RNG seed are provided, THE Level_Engine SHALL produce the same Score.
+9. THE Level_Engine SHALL keep the Score at zero or greater at all times.
+10. THE Level_Engine SHALL calculate the Score independently of the DOM, and THE Game_Board_Screen SHALL display the Score without duplicating any Score formula.
+
+### Requirement 35: Level Configuration
+
+**User Story:** As a Developer, I want levels defined as data, so that new levels can be added without changing engine logic.
+
+#### Acceptance Criteria
+
+1. THE Level_Engine SHALL accept a data-driven Level_Configuration defining at minimum a level identifier, Board dimensions, available Base_Gem_Types, a Move_Limit, an Objective_Type, and an Objective_Target.
+2. WHERE no supported alternate dimension is required by a test or configuration, THE Level_Engine SHALL use an 8x8 Board for Phase 3.
+3. THE Level_Configuration SHALL define the available Normal_Gem types as a subset of the six Base_Gem_Types.
+4. THE Level_Configuration SHALL define a Move_Limit as the maximum number of committed moves for the level.
+5. THE Level_Configuration SHALL support at least two Objective_Types: a score target and a collect-gem-type target.
+6. THE Level_Configuration SHALL define a numeric Objective_Target for each Objective.
+7. IF a Level_Configuration is invalid, THEN THE Level_Engine SHALL reject the Level_Configuration before gameplay begins and SHALL NOT produce a corrupted playable Board.
+
+### Requirement 36: Move Tracking
+
+**User Story:** As a Player, I want a limited number of moves, so that levels present a challenge.
+
+#### Acceptance Criteria
+
+1. WHEN a level begins, THE Level_Engine SHALL initialize Remaining_Moves to the configured Move_Limit.
+2. WHEN a Committed_Move completes, THE Level_Engine SHALL decrease Remaining_Moves by exactly one.
+3. IF a Swap is rejected or reverted, THEN THE Level_Engine SHALL leave Remaining_Moves unchanged.
+4. WHEN a player-initiated valid Special_Combination completes, THE Level_Engine SHALL count it as exactly one Committed_Move.
+5. WHILE automatic Cascades are resolving, THE Level_Engine SHALL leave Remaining_Moves unchanged.
+6. THE Level_Engine SHALL keep Remaining_Moves at zero or greater at all times.
+
+### Requirement 37: Objective Tracking
+
+**User Story:** As a Player, I want a clear goal, so that I know how to win a level.
+
+#### Acceptance Criteria
+
+1. WHERE the Objective_Type is a score target, THE Level_Engine SHALL mark the Objective satisfied when the Score is greater than or equal to the Objective_Target.
+2. WHERE the Objective_Type is a collect-gem-type target, THE Level_Engine SHALL track the count of applicable Gems removed toward the Objective_Target.
+3. WHEN Gems are removed during a Cascade, THE Level_Engine SHALL count applicable removed Gems toward the Objective_Progress.
+4. WHEN Gems are removed by a special effect, THE Level_Engine SHALL count applicable removed Gems toward the Objective_Progress.
+5. THE Level_Engine SHALL track Objective_Progress as pure logic without any DOM dependency.
+
+### Requirement 38: Level Win State
+
+**User Story:** As a Player, I want to win when I meet the goal, so that my success is recognized.
+
+#### Acceptance Criteria
+
+1. WHEN all Objectives of the active level are satisfied, THE Level_Engine SHALL set the Level_Status to won.
+2. WHERE Objectives become satisfied during a Cascade, THE Level_Engine SHALL evaluate the win condition after the Cascade resolution completes.
+3. WHEN a move satisfies the win condition, THE Level_Engine SHALL complete the required Cascade resolution before the level is presented as complete.
+4. WHILE the Level_Status is won, THE Board_Engine SHALL ignore further Player input.
+
+### Requirement 39: Level Lose State
+
+**User Story:** As a Player, I want to lose when I run out of moves, so that levels have real stakes.
+
+#### Acceptance Criteria
+
+1. WHEN Remaining_Moves reaches zero and the Objectives are not satisfied, THE Level_Engine SHALL set the Level_Status to lost.
+2. WHEN the final move triggers a Cascade, THE Level_Engine SHALL complete the Cascade resolution before determining the final Level_Status.
+3. WHILE the Level_Status is lost, THE Board_Engine SHALL ignore further Player input.
+4. IF the final move satisfies the Objectives while reducing Remaining_Moves to zero, THEN THE Level_Engine SHALL set the Level_Status to won rather than lost.
+
+### Requirement 40: Restart Level
+
+**User Story:** As a Player, I want to restart a level, so that I can try again after winning or losing.
+
+#### Acceptance Criteria
+
+1. WHILE a level is active or has ended, THE Game_Board_Screen SHALL provide a restart control.
+2. WHEN the restart control is activated, THE Level_Engine SHALL reset the Board, the Score, the Remaining_Moves, the Objective_Progress, the Level_Status, the current selection, and the resolving state.
+3. WHEN a level is restarted, THE Board_Engine SHALL generate a valid Stable_Board.
+4. WHEN a level is restarted, THE Level_Engine SHALL leave no state carried over from the previous attempt.
+5. THE Game_Board_Screen SHALL make the restart control available after both a won Level_Status and a lost Level_Status.
+
+### Requirement 41: Game State Extension
+
+**User Story:** As a Developer, I want the game state to hold level data, so that gameplay progress is tracked cleanly.
+
+#### Acceptance Criteria
+
+1. THE Level_Engine SHALL extend the existing Phase 1 game-state scaffold without coupling the extended state to the DOM.
+2. THE active game state SHALL represent the active level, the Score, the Remaining_Moves, the Objective_Progress, and the Level_Status.
+3. THE Level_Status SHALL be drawn from the finite set of values playing, won, and lost, with the exact representation documented in the Design.
+4. THE Level_Engine SHALL support resetting the active level cleanly to its initial configured state.
+
+### Requirement 42: UI Requirements
+
+**User Story:** As a Player, I want to see my score, moves, and objective, so that I can track my progress.
+
+#### Acceptance Criteria
+
+1. WHILE a level is active, THE Game_Board_Screen SHALL display the current Score.
+2. WHILE a level is active, THE Game_Board_Screen SHALL display the Remaining_Moves.
+3. WHILE a level is active, THE Game_Board_Screen SHALL display the active Objective and the Objective_Progress.
+4. THE Game_Board_Screen SHALL visibly communicate whether the Level_Status is playing, won, or lost.
+5. WHILE a level is active or ended, THE Game_Board_Screen SHALL provide a control that restarts the current level.
+6. THE Game_Board_Screen SHALL render each Special_Gem visually distinguishable from a Normal_Gem using a distinction that does not rely solely on color.
+7. WHERE a Special_Gem is displayed, THE Game_Board_Screen SHALL provide a meaningful accessible label or text alternative for that Special_Gem's state.
+8. THE Game_Board_Screen SHALL maintain the Phase 2 responsive constraints, rendering with zero horizontal overflow, square Cells, a minimum Touch_Target of 44 by 44 CSS pixels, usable layout on mobile and desktop, and horizontally centered content on Viewport widths greater than 768 CSS pixels.
+
+### Requirement 43: Input and Interaction
+
+**User Story:** As a Player, I want reliable controls during special effects, so that the game does not misbehave.
+
+#### Acceptance Criteria
+
+1. WHEN a Player activates a Cell using a mouse click or a touch tap, THE Game_Board_Screen SHALL route the activation to the Board_Engine.
+2. THE Game_Board_Screen SHALL NOT require a swipe or drag gesture, such that swipe and drag remain out of scope for Phase 3.
+3. WHILE a Special_Activation or Cascade resolution is in progress, THE Board_Engine SHALL block Player input until the Board reaches a Stable_Board.
+4. WHILE the Level_Status is won or lost, THE Board_Engine SHALL block Player input.
+5. WHEN a single triggering event activates a Special_Gem, THE Board_Engine SHALL activate that Special_Gem exactly once for that event.
+
+### Requirement 44: Performance and Safety
+
+**User Story:** As a Developer, I want bounded, safe resolution, so that the engine never hangs or corrupts state.
+
+#### Acceptance Criteria
+
+1. THE Board_Engine SHALL apply an explicit safety bound to Special_Activation and Cascade resolution.
+2. WHILE a special-gem chain is resolving, THE Board_Engine SHALL terminate the chain without producing an infinite loop.
+3. WHEN any resolution completes, THE Board_Engine SHALL keep the Board dimensions unchanged and SHALL assign every occupied Cell a valid Base_Gem_Type and a valid Special_Gem_Type.
+4. WHEN resolution completes and the level is playable, THE Board_Engine SHALL leave the Board as a Stable_Board.
+5. IF an operation would produce an invalid Board or invalid game state, THEN THE Board_Engine SHALL reject the operation and retain the previous valid game state unchanged.
+
+### Requirement 45: Testing Requirements
+
+**User Story:** As a Developer, I want comprehensive automated tests, so that Phase 3 behavior is verified and stays correct.
+
+#### Acceptance Criteria
+
+1. THE SnoopsGem_Game test suite SHALL retain all Phase 2 tests in a passing state such that no Phase 3 implementation breaks a Phase 2 requirement.
+2. THE SnoopsGem_Game test suite SHALL include Special_Gem unit tests covering creation, validation, line_horizontal creation, line_vertical creation, rainbow creation, bomb creation, deterministic Creation_Cell selection, preservation of the created Special_Gem, and rejection of invalid Special_Gem_Types.
+3. THE SnoopsGem_Game test suite SHALL include Special_Activation tests covering line_horizontal, line_vertical, rainbow, and bomb activation, edge and corner handling, affected-cell correctness, absence of duplicate removal, and single activation per trigger.
+4. THE SnoopsGem_Game test suite SHALL include combination tests covering line+line, rainbow+normal, rainbow+line, rainbow+rainbow, bomb+line, bomb+rainbow, and bomb+bomb.
+5. THE SnoopsGem_Game test suite SHALL include match-classification tests covering 3-match, horizontal 4-match, vertical 4-match, 5-or-more match, T-shaped match, L-shaped match, overlapping runs, deterministic Creation_Cell, and absence of accidental Special_Gem creation.
+6. THE SnoopsGem_Game test suite SHALL include Cascade tests verifying that Special_Activation enters the Cascade, that Cascades continue until no Matches remain, that a Stable_Board is reached, that resolving blocks input, that resolution is bounded, and that special chains terminate.
+7. THE SnoopsGem_Game test suite SHALL include Score tests covering normal match Score, larger-match bonus, special-creation bonus, special-activation Score, combination bonus, cascade bonus, deterministic scoring, and non-negative Score.
+8. THE SnoopsGem_Game test suite SHALL include level tests covering valid Level_Configuration, rejection of invalid Level_Configuration, Move_Limit initialization, valid decrement, absence of decrement on invalid moves, absence of decrement during Cascades, Objective tracking, win state, lose state, win priority on the final move, and restart reset.
+9. THE SnoopsGem_Game test suite SHALL include property tests using fast-check with a minimum of 100 iterations each: property P2 verifying that special resolution preserves Board invariants (valid dimensions, valid types, no invalid Cells, and Stable_Board when active); property P3 verifying that Special_Activation is boundary-safe and never accesses or produces invalid coordinates including corners and edges; property P4 verifying that the Score is monotonic and never decreases over a valid sequence; and property P6 verifying move accounting such that valid moves consume exactly one move, reverted invalid moves consume zero, and Cascades consume zero; and THE test suite SHALL keep the existing properties P1 and P5 passing.
+10. THE SnoopsGem_Game test suite SHALL include integration tests running under jsdom covering Special_Gem rendering, selection, activation, combination, Score display, move display, Objective display, win state, loss state, restart, input blocking, and navigation compatibility.
+11. THE SnoopsGem_Game test suite SHALL use an injectable RNG wherever random generation affects assertions, avoiding uncontrolled random calls where deterministic behavior is required.
+
+### Requirement 46: Architecture and Scope Protection
+
+**User Story:** As a Developer, I want the architecture and scope protected, so that Phase 3 stays clean and additive.
+
+#### Acceptance Criteria
+
+1. THE SnoopsGem_Game SHALL keep the pure engine testable without the DOM for Special_Gem creation, activation, combinations, Score, Objective tracking, move accounting, and Level_Status transitions.
+2. THE Game_Board_Screen SHALL orchestrate user interface and interaction, and SHALL NOT duplicate match detection, Gravity, Refill, special-effect calculation, Score formulas, or Objective formulas.
+3. THE SnoopsGem_Game SHALL keep the Phase 1 architecture intact, and SHALL NOT modify the entry point ES_Module or the Router ES_Module unless a documented Phase 3 requirement explicitly requires the change.
+4. THE Main_Menu SHALL continue to contain exactly the Play, World Map, Boosters, Achievements, and Settings Menu_Buttons, with only the Play route active for Phase 3.
+5. THE SnoopsGem_Game SHALL exclude world map, shop, currency, lives, achievements, audio, persistence, backend, authentication, and multiplayer systems from Phase 3, such that none of these systems is implemented, initialized, or reachable through any Phase 3 interaction.
+
+### Requirement 47: Phase 3 Completion Criteria
+
+**User Story:** As a Developer, I want explicit completion criteria, so that Phase 3 is verifiably done.
+
+#### Acceptance Criteria
+
+1. THE SnoopsGem_Game SHALL implement every Phase 3 requirement from Requirement 26 through Requirement 46.
+2. THE SnoopsGem_Game test suite SHALL pass all Phase 2 tests, all Phase 3 unit tests, all Phase 3 integration tests, and all required property tests, each property test running a minimum of 100 iterations, with zero failures across the full suite.
+3. THE Board_Engine SHALL produce deterministic Special_Combination effects and THE Level_Engine SHALL produce a deterministic and non-negative Score for identical inputs.
+4. THE Level_Engine SHALL apply correct move accounting and correct win and lose determination, and THE Level_Engine SHALL reset a level completely on restart.
+5. THE Game_Board_Screen SHALL remain responsive with zero horizontal overflow, SHALL require no swipe or drag gesture, and SHALL introduce no out-of-scope system.
+6. THE SnoopsGem_Game SHALL introduce no unnecessary Phase 1 changes, such that a final review of the change set confirms only Phase 3 additions and documented required modifications.
+
+## Phase 3 Definition of Done
+
+Phase 3 is done when a Player can play an 8x8 level; create Line_Crystals, Rainbow_Crystals, and Bomb_Crystals; activate Special_Gems; combine Special_Gems; trigger special-gem Cascades; earn Score; track Remaining_Moves; track Objective_Progress; win a level; lose a level; restart a level; play using mouse or touch; and see all relevant gameplay state in the responsive Game_Board_Screen — while the existing Phase 2 engine and all previous tests remain intact.
